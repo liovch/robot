@@ -33,7 +33,9 @@ CONFIG += qdeclarative-boostable
 SOURCES += main.cpp \
     imageprocessor.cpp \
     marker.cpp \
-    markerparams.cpp
+    markerparams.cpp \
+    imageprovider.cpp \
+    markerprocessor.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -51,4 +53,6 @@ OTHER_FILES += \
 HEADERS += \
     imageprocessor.h \
     marker.h \
-    markerparams.h
+    markerparams.h \
+    imageprovider.h \
+    markerprocessor.h

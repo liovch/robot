@@ -11,12 +11,19 @@ int max_h_gap = 2;
 ImageProcessor::ImageProcessor(QObject *parent) :
     QObject(parent)
 {
+    if (gMarkerParams.isEmpty())
+        initMarkerParams();
+
+    emit needNextImage();
 }
 
-QList<Marker> ImageProcessor::processImage(const QImage &image)
+void ImageProcessor::processImage(const QImage &image)
 {
     QVector<MarkerParams::MarkerId> markerMap = buildMarkerMap(image);
-    return buildMarkerList(markerMap, image.width(), image.height());
+    QList<Marker> markers = buildMarkerList(markerMap, image.width(), image.height());
+    emit newMarkers(markers);
+    emit newMarkerMap(markerMap, image.width(), image.height()); // TODO: Probably need a special class for the marker map
+    emit needNextImage();
 }
 
 QVector<MarkerParams::MarkerId> ImageProcessor::buildMarkerMap(const QImage &image)

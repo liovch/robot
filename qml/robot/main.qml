@@ -2,16 +2,25 @@
 import QtQuick 1.1
 
 Rectangle {
-    width: 360
-    height: 360
-    Text {
-        text: qsTr("Hello World")
-        anchors.centerIn: parent
+    width: 800
+    height: 450
+    id: root
+    Image {
+        id: image
+        width: parent.width; height: parent.height// TODO: How to reduce the height by the correct amount?
+        // Set from C++: source: "qt-logo.png"
+        // clip: true
+        smooth: true
+        fillMode: Image.PreserveAspectFit
+        objectName: "image"
     }
+
+    signal qmlClicked()
+
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            Qt.quit();
+            root.qmlClicked()
         }
     }
 }

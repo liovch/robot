@@ -12,12 +12,18 @@ class ImageProcessor : public QObject
 public:
     explicit ImageProcessor(QObject *parent = 0);
 
-    // finds markers on an image
-    QList<Marker> processImage(const QImage& image);
-
 signals:
+    // emited when image processor is ready to process the next image
+    void needNextImage();
+    // emitted after image processor finishes the current image
+    // empty list is emitted if no markers were found on the current image
+    void newMarkers(const QList<Marker>& markers);
+    // emits marker map image with marker locations and middle line
+    void newMarkerMap(const QVector<MarkerParams::MarkerId>& markerMap, int width, int height);
 
 public slots:
+    // finds markers on an image
+    void processImage(const QImage& image);
 
 private:
     // apply color threshold for each marker
