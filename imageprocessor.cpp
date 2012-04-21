@@ -19,10 +19,16 @@ ImageProcessor::ImageProcessor(QObject *parent) :
 
 void ImageProcessor::processImage(const QImage &image)
 {
-    QVector<MarkerParams::MarkerId> markerMap = buildMarkerMap(image);
-    QList<Marker> markers = buildMarkerList(markerMap, image.width(), image.height());
+    m_lastImage = image;
+    processLastImage();
+}
+
+void ImageProcessor::processLastImage()
+{
+    QVector<MarkerParams::MarkerId> markerMap = buildMarkerMap(m_lastImage);
+    QList<Marker> markers = buildMarkerList(markerMap, m_lastImage.width(), m_lastImage.height());
     emit newMarkers(markers);
-    emit newMarkerMap(markerMap, image.width(), image.height()); // TODO: Probably need a special class for the marker map
+    emit newMarkerMap(markerMap, m_lastImage.width(), m_lastImage.height()); // TODO: Probably need a special class for the marker map
     emit needNextImage();
 }
 
@@ -31,15 +37,17 @@ QVector<MarkerParams::MarkerId> ImageProcessor::buildMarkerMap(const QImage &ima
     QVector<MarkerParams::MarkerId> markerMap(image.width() * image.height(), MARKER_NULL);
 
     // TODO: speed optimization
-    foreach (MarkerParams params, gMarkerParams) {
-        QPair<QRgb, QRgb> range = params.range();
+    foreach (QObject *obj, gMarkerParams) {
+        MarkerParams *params = qobject_cast<MarkerParams*>(obj);
+        Q_ASSERT(params);
+        QPair<QRgb, QRgb> range = params->range();
         for (int y = 0; y < image.height(); y++)
             for (int x = 0; x < image.width(); x++) {
                 QRgb pixel = image.pixel(x, y);
                 if ((qRed(pixel) >= qRed(range.first) && qRed(pixel) <= qRed(range.second)) &&
                     (qGreen(pixel) >= qGreen(range.first) && qGreen(pixel) <= qGreen(range.second)) &&
                     (qBlue(pixel) >= qBlue(range.first) && qBlue(pixel) <= qBlue(range.second))) {
-                    markerMap[x + y * image.width()] = params.id();
+                    markerMap[x + y * image.width()] = params->id();
                 }
             }
     }

@@ -41,5 +41,5 @@ Marker &Marker::operator =(const Marker &marker)
 
 double Marker::distance() const
 {
-    return gMarkerParams[id()].height() * FOCAL_DISTANCE / (height() * PIXEL_HEIGHT);
+    return findMarkerParams(id()).height() * FOCAL_DISTANCE / (height() * PIXEL_HEIGHT);
 }

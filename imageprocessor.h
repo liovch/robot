@@ -24,6 +24,7 @@ signals:
 public slots:
     // finds markers on an image
     void processImage(const QImage& image);
+    void processLastImage();
 
 private:
     // apply color threshold for each marker
@@ -31,6 +32,8 @@ private:
     QList<Marker> buildMarkerList(QVector<MarkerParams::MarkerId> markerMap, int width, int height);
     double computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below);
     void leastSquaresFitting(int *markersOnLine, int width, int height);
+
+    QImage m_lastImage;
 };
 
 #endif // IMAGEPROCESSOR_H
