@@ -12,6 +12,9 @@ public:
     explicit Robot(QObject *parent = 0);
     explicit Robot(const Robot& robot);
 
+    // initialize random robot position and angle
+    void random(qreal maxPosition);
+
     QPair<qreal, qreal> position() const { return m_position; }
     qreal angle() const { return m_angle; }
 
@@ -29,6 +32,13 @@ public:
     // returns list of distances to each unique marker with added sense noise
     QList<qreal> sense() const;
     void move(qreal turn, qreal forward);
+
+    // TODO: Probably need a separate class for measurement
+    // calculates how likely a measurement should be
+    qreal measurementProbability(const QList<qreal>& measurementList) const;
+
+    // check if marker is visible from robot's location
+    bool isMarkerVisible(const QPair<qreal, qreal>& markerPosition) const;
 
 signals:
     

@@ -20,6 +20,8 @@ public:
     int scale() const { return m_scalePowerOfTwo; }
     void setScale(int powerOfTwo);
 
+    qreal angleOfView() const;
+
 signals:
     void scaleChanged();
 

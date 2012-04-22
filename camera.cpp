@@ -1,9 +1,11 @@
 #include "camera.h"
 #include "markerparams.h"
+#include <qmath.h>
 
 #define CAMERA_SCALE   1        // 2 << CAMERA_SCALE
 #define PIXEL_HEIGHT   1.478E-6 // physical size of a pixel on the camera sensor (in m)
 #define FOCAL_DISTANCE 3.77E-3  // focal distance of the camera (in m)
+#define ANGLE_OF_VIEW  70.0     // camera angle of view (in degrees)
 
 Camera gCamera;
 
@@ -25,4 +27,9 @@ void Camera::setScale(int powerOfTwo)
         m_scalePowerOfTwo = powerOfTwo;
         emit scaleChanged();
     }
+}
+
+qreal Camera::angleOfView() const
+{
+    return (ANGLE_OF_VIEW * M_PI) / 180.0;
 }
