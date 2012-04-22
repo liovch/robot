@@ -33,6 +33,9 @@ private:
     double computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below);
     void leastSquaresFitting(int *markersOnLine, int width, int height);
 
+    int maxHorizontalGap() const;
+    int maxVerticalGap() const;
+
     QImage m_lastImage;
 };
 

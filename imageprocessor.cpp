@@ -1,12 +1,13 @@
 #include "imageprocessor.h"
+#include "camera.h"
 
 // TODO: These shouldn't be in pixels, but in mm?
 #define MAX_V_GAP 20 // maximum vertical gap while processing marker pixels
+#define MAX_H_GAP 2
 #define MIN_WIDTH 2  // minimum accepted marker width
 #define MIN_HEIGHT 1 // minimum accepted marker height
 #define MAX_DISTANCE 5.0 // maximum accepted distance to marker
 // TODO: What about MIN_DISTANCE ?
-int max_h_gap = 2;
 
 ImageProcessor::ImageProcessor(QObject *parent) :
     QObject(parent)
@@ -85,7 +86,7 @@ QList<Marker> ImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> ma
                 vGap = 0;
             } else {
                 vGap++;
-                if (vGap >= MAX_V_GAP) break;
+                if (vGap >= maxVerticalGap()) break;
             }
         }
 
@@ -107,7 +108,7 @@ QList<Marker> ImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> ma
                 vGap = 0;
             } else {
                 vGap++;
-                if (vGap >= MAX_V_GAP) break;
+                if (vGap >= maxVerticalGap()) break;
             }
         }
 
@@ -124,7 +125,7 @@ QList<Marker> ImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> ma
             hGap++;
             if (!isMarkerInProgress) continue;
 
-            if (hGap > max_h_gap) {
+            if (hGap > maxHorizontalGap()) {
                 // finish current marker
                 curMarker.setHeight(computeMarkerHeight(markersOnLine.data() + (int)curMarker.offset(), (int)curMarker.width(), width, above, below));
                 if (curMarker.width() >= MIN_WIDTH && curMarker.height() >= MIN_HEIGHT) {
@@ -140,7 +141,7 @@ QList<Marker> ImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> ma
 
         if (!isMarkerInProgress) {
             // Make sure there's at least max_h_gap on the left side. Do not count first blob if its cut off.
-            if (markerList.empty() && hGap < max_h_gap) continue;
+            if (markerList.empty() && hGap < maxHorizontalGap()) continue;
 
             isMarkerInProgress = true;
             curMarker.setOffset(i);
@@ -211,3 +212,12 @@ void ImageProcessor::leastSquaresFitting(int *markersOnLine, int width, int heig
     for (int i = 0; i < width; i++) markersOnLine[i] = (int)(a + b * i + 0.5); // TODO: avoid aliasing
 }
 
+int ImageProcessor::maxHorizontalGap() const
+{
+    return MAX_H_GAP;
+}
+
+int ImageProcessor::maxVerticalGap() const
+{
+    return int(MAX_V_GAP / double(2 << gCamera.scale()) + 0.5);
+}

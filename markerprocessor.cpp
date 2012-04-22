@@ -46,7 +46,7 @@ void MarkerProcessor::processMarkerMap(const QVector<MarkerParams::MarkerId> &ma
 
     painter.drawLine(0, image.height() / 2, image.width(), image.height() / 2);
 
-    pen.setStyle(Qt::DashLine);
+    pen.setStyle(Qt::SolidLine);
     painter.setPen(pen);
     foreach(Marker marker, m_markers) {
         pen.setColor(markerColor(marker.id()));

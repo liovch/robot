@@ -18,7 +18,7 @@ public:
     double above() const { return m_above; }
     double below() const { return m_below; }
 
-    // computes distance from robot to this marker based on the height of this marker
+    // computes distance from camera to this marker based on the height of this marker
     double distance() const;
 
     void setOffset(double offset) { m_offset = offset; }

@@ -1,8 +1,5 @@
 #include "marker.h"
-
-// TODO: move these to a new camera class
-#define PIXEL_HEIGHT   1.478E-6 // physical size of a pixel on the camera sensor (in m)
-#define FOCAL_DISTANCE 3.77E-3  // focal distance of the camera (in m)
+#include "camera.h"
 
 Marker::Marker(QObject *parent) :
     QObject(parent),
@@ -41,5 +38,5 @@ Marker &Marker::operator =(const Marker &marker)
 
 double Marker::distance() const
 {
-    return findMarkerParams(id()).height() * FOCAL_DISTANCE / (height() * PIXEL_HEIGHT);
+    return gCamera.distance(*this);
 }
