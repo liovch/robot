@@ -156,7 +156,7 @@ QList<Marker> ImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> ma
     return markerList;
 }
 
-double ImageProcessor::computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below)
+qreal ImageProcessor::computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below)
 {
     if (markerWidth <= 0) return 0.0;
 
@@ -176,7 +176,7 @@ double ImageProcessor::computeMarkerHeight(int *markersOnLine, int markerWidth, 
     leastSquaresFitting(markersOnLine + lineSize * 3, markerWidth, belowHeight);
 
     // TODO: We assume it to be an isosceles ([aisosiliz]) trapezoid. So we could probably simplify stuff here.
-    double sum = 0.0;
+    qreal sum = 0.0;
     above = 0;
     below = 0;
     for (int i = 0; i < markerWidth; i++) {
@@ -187,28 +187,28 @@ double ImageProcessor::computeMarkerHeight(int *markersOnLine, int markerWidth, 
 
     above /= markerWidth;
     below /= markerWidth;
-    return sum / (double)markerWidth;
+    return sum / (qreal)markerWidth;
 }
 
 void ImageProcessor::leastSquaresFitting(int *markersOnLine, int width, int height)
 {
-    double sumX = 0.0, sumY = 0.0, sumX2 = 0.0, sumXY = 0.0;
-    double n = 0.0;
+    qreal sumX = 0.0, sumY = 0.0, sumX2 = 0.0, sumXY = 0.0;
+    qreal n = 0.0;
     for (int i = 0; i < width; i++) {
       int y = markersOnLine[i];
       if (y < height / 4) continue; // skip line in it differs by more than max height / 4
-      sumX += (double)i;
-      sumY += (double)y;
-      sumX2 += (double)i * i;
-      sumXY += (double)i * y;
+      sumX += (qreal)i;
+      sumY += (qreal)y;
+      sumX2 += (qreal)i * i;
+      sumXY += (qreal)i * y;
       n += 1.0;
     }
 
-    double d = (sumX2 - n * sumX * sumX);
+    qreal d = (sumX2 - n * sumX * sumX);
     if (d == 0.0) return;
 
-    double a = (sumY * sumX2 - sumX * sumXY) / d;
-    double b = (sumXY - n * sumX * sumY) / d;
+    qreal a = (sumY * sumX2 - sumX * sumXY) / d;
+    qreal b = (sumXY - n * sumX * sumY) / d;
     for (int i = 0; i < width; i++) markersOnLine[i] = (int)(a + b * i + 0.5); // TODO: avoid aliasing
 }
 
@@ -219,5 +219,5 @@ int ImageProcessor::maxHorizontalGap() const
 
 int ImageProcessor::maxVerticalGap() const
 {
-    return int(MAX_V_GAP / double(2 << gCamera.scale()) + 0.5);
+    return int(MAX_V_GAP / qreal(2 << gCamera.scale()) + 0.5);
 }

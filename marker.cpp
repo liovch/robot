@@ -36,7 +36,7 @@ Marker &Marker::operator =(const Marker &marker)
     return *this;
 }
 
-double Marker::distance() const
+qreal Marker::distance() const
 {
     return gCamera.distance(*this);
 }

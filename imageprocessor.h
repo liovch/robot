@@ -30,7 +30,7 @@ private:
     // apply color threshold for each marker
     QVector<MarkerParams::MarkerId> buildMarkerMap(const QImage& image);
     QList<Marker> buildMarkerList(QVector<MarkerParams::MarkerId> markerMap, int width, int height);
-    double computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below);
+    qreal computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below);
     void leastSquaresFitting(int *markersOnLine, int width, int height);
 
     int maxHorizontalGap() const;

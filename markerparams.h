@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QPair>
 
+// Each instance of this class describes a unique marker
 class MarkerParams : public QObject
 {
     Q_OBJECT
@@ -43,13 +44,15 @@ public:
     #define MARKER_BLUE  3
     typedef uint MarkerId;
 
-    void setHeight(double height) { m_height = height; }
+    void setHeight(qreal height) { m_height = height; }
     void setRange(const QPair<QRgb, QRgb>& range);
     void setId(MarkerId id);
+    void setPosition(const QPair<qreal, qreal>& position);
 
-    double height() const { return m_height; }
+    qreal height() const { return m_height; }
     QPair<QRgb, QRgb> range() const { return m_range; }
     MarkerId id() const { return m_id; }
+    QPair<qreal, qreal> position() const { return m_position; }
 
     MarkerParams& operator=(const MarkerParams& params);
 
@@ -65,12 +68,13 @@ signals:
 public slots:
 
 private:
-    double m_height; // pgysical height of the marker in meters
+    qreal m_height; // pgysical height of the marker in meters
     QPair<QRgb, QRgb> m_range; // color range for this marker
     // Note: Cannot use unique name as a marker id because we're building 2D map of markers in image processor
     // TODO: Maybe we could still use 2D map of QStrings with empty string for pixels where no markers found
     MarkerId m_id; // unique marker id (0 means no marker)
     QString m_name; // marker name (optional)
+    QPair<qreal, qreal> m_position; // position
 };
 
 extern QList<QObject*> gMarkerParams;

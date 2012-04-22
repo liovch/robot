@@ -36,7 +36,8 @@ SOURCES += main.cpp \
     markerparams.cpp \
     imageprovider.cpp \
     markerprocessor.cpp \
-    camera.cpp
+    camera.cpp \
+    robot.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -57,4 +58,5 @@ HEADERS += \
     markerparams.h \
     imageprovider.h \
     markerprocessor.h \
-    camera.h
+    camera.h \
+    robot.h
