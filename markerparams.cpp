@@ -4,7 +4,8 @@ MarkerParams::MarkerParams(QObject *parent) :
     QObject(parent),
     m_height(0.0),
     m_range(qRgb(0, 0, 0), qRgb(0, 0, 0)),
-    m_id(MARKER_NULL)
+    m_id(MARKER_NULL),
+    m_position(QPair<qreal, qreal>(0.0, 0.0))
 {
 }
 
@@ -13,7 +14,8 @@ MarkerParams::MarkerParams(const MarkerParams &params) :
     m_height(params.height()),
     m_range(params.range()),
     m_id(params.id()),
-    m_name(params.name())
+    m_name(params.name()),
+    m_position(params.position())
 {
 
 }
@@ -115,6 +117,8 @@ MarkerParams &MarkerParams::operator =(const MarkerParams &params)
     m_height = params.height();
     m_range = params.range();
     m_id = params.id();
+    m_name = params.name();
+    m_position = params.position();
 
     return *this;
 }
@@ -169,5 +173,7 @@ MarkerParams findMarkerParams(MarkerParams::MarkerId id)
             return *params;
         }
     }
+
+    qDebug() << "Could not find marker id:" << id;
     return MarkerParams();
 }

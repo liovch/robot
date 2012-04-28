@@ -60,6 +60,13 @@ bool Manager::init()
 
     imageViewer.showExpanded();
     particleViewer.showExpanded();
+
+    // set initial window positions
+    QRect geometry = imageViewer.geometry();
+    imageViewer.setGeometry(300, 600, geometry.width(), geometry.height());
+    geometry = particleViewer.geometry();
+    particleViewer.setGeometry(300, 100, geometry.width(), geometry.height());
+
     return true;
 }
 
