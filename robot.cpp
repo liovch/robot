@@ -74,15 +74,15 @@ QList<qreal> Robot::sense() const
     return listDistances;
 }
 
-void Robot::move(qreal turn, qreal forward)
+void Robot::move(const Movement &m)
 {
     // turn, and add randomness to the turning command
-    m_angle += turn;
+    m_angle += m.turn();
     m_angle += gRandom.gauss(0.0, m_noiseTurn);
     m_angle = fmod(m_angle, 2.0 * M_PI);
 
     // move, and add randomness to the motion command
-    qreal distance = forward;
+    qreal distance = m.forward();
     distance += gRandom.gauss(0.0, m_noiseForward);
 
     m_position.first += qCos(m_angle) * distance;
@@ -91,31 +91,24 @@ void Robot::move(qreal turn, qreal forward)
     // TODO: Do we need a cyclic truncate?
 }
 
-qreal Robot::measurementProbability(const QList<qreal> &measurementList) const
+qreal Robot::measurementProbability(const QList<Marker> &markers) const
 {
-    Q_ASSERT(measurementList.count() == gMarkerParams.count());
+    if (markers.isEmpty())
+        return 0.0; // TODO: Use "can't see a marker" probability instead of 0.0
 
-    QList<qreal>::const_iterator it(measurementList.begin());
-    bool isMeasurementEmpty = true;
     qreal probability = 1.0;
-    foreach (QObject *obj, gMarkerParams) {
-        MarkerParams *params = qobject_cast<MarkerParams*>(obj);
-        Q_ASSERT(params);
-
-        qreal measurement = *it; it++;
-        if (qFuzzyCompare(measurement, 0.0))
-            continue;
-        isMeasurementEmpty = false;
+    foreach (Marker m, markers) {
+        MarkerParams params = findMarkerParams(m.id());
 
         // TODO: Maybe use "false marker probability" instead of 0.0 ?
-        if (!isMarkerVisible(params->position()))
+        if (!isMarkerVisible(params.position()))
             return 0.0;
 
-        qreal distance = qSqrt(qPow((m_position.first - params->position().first), 2) + qPow((m_position.second - params->position().second), 2));
-        probability *= gRandom.gaussian(distance, m_noiseSense, measurement);
+        qreal distance = qSqrt(qPow((m_position.first - params.position().first), 2) + qPow((m_position.second - params.position().second), 2));
+        probability *= gRandom.gaussian(distance, m_noiseSense, m.distance());
     }
 
-    return isMeasurementEmpty ? 0.0 : probability; // TODO: Use "can't see a marker" probability instead of 0.0
+    return probability;
 }
 
 bool Robot::isMarkerVisible(const QPair<qreal, qreal> &markerPosition) const

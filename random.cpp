@@ -16,7 +16,7 @@ Random::Random(QObject *parent) :
 
 qreal Random::random() const
 {
-    return qrand() / (qreal)(RAND_MAX + 1);
+    return qrand() / ((qreal)RAND_MAX + 1.0);
 }
 
 qreal Random::gauss(qreal mu, qreal sigma)

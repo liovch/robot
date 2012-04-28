@@ -1,5 +1,6 @@
 #include "particlefilter.h"
 #include "random.h"
+#include "settings.h"
 
 ParticleFilter::ParticleFilter(QObject *parent) :
     QObject(parent)
@@ -9,37 +10,42 @@ ParticleFilter::ParticleFilter(QObject *parent) :
 void ParticleFilter::init(size_t N, qreal maxPosition)
 {
     m_particles.resize(N);
-    foreach (Robot r, m_particles) {
-        r.random(maxPosition);
-        // TODO: Set noise
+    for (int n = 0; n < m_particles.size(); n++) {
+        m_particles[n].random(maxPosition);
+
+        // TODO: Maybe noise could be global parameter
+        m_particles[n].setNoiseForward(NOISE_FORWARD);
+        m_particles[n].setNoiseTurn(NOISE_TURN);
+        m_particles[n].setNoiseSense(NOISE_SENSE);
     }
 }
 
-void ParticleFilter::move(qreal turn, qreal forward)
+void ParticleFilter::move(const Movement &m)
 {
-    foreach (Robot r, m_particles) {
-        r.move(turn, forward);
+    for (int n = 0; n < m_particles.size(); n++) {
+        m_particles[n].move(m);
     }
+    emit particlesUpdated(m_particles);
 }
 
-void ParticleFilter::resample(const QList<qreal> &measurementList)
+void ParticleFilter::resample(const QList<Marker> &markers)
 {
     size_t N = m_particles.size();
     QVector<qreal> weights(N);
 
     qreal maxWeight = 0.0;
     for (size_t n = 0; n < N; n++) {
-        weights[n] = m_particles[n].measurementProbability(measurementList);
+        weights[n] = m_particles[n].measurementProbability(markers);
         if (weights[n] > maxWeight)
             maxWeight = weights[n];
     }
 
     // Resampling wheel
     QList<Robot> resampled;
-    int index = int(Random().random() * N);
+    int index = int(gRandom.random() * N);
     qreal beta = 0.0;
     for (size_t n = 0; n < N; n++) {
-        beta += Random().random() * 2.0 * maxWeight;
+        beta += gRandom.random() * 2.0 * maxWeight;
         while (beta > weights[index]) {
             beta -= weights[index];
             index = (index + 1) % N;
@@ -47,9 +53,6 @@ void ParticleFilter::resample(const QList<qreal> &measurementList)
         resampled.append(m_particles[index]);
     }
 
-    size_t n = 0;
-    foreach (Robot r, resampled) {
-        m_particles[n] = r;
-        n++;
-    }
+    m_particles = QVector<Robot>::fromList(resampled);
+    emit particlesUpdated(m_particles);
 }

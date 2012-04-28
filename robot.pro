@@ -39,7 +39,10 @@ SOURCES += main.cpp \
     camera.cpp \
     robot.cpp \
     random.cpp \
-    particlefilter.cpp
+    particlefilter.cpp \
+    movementprovider.cpp \
+    movement.cpp \
+    particledisplay.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -52,7 +55,8 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/copyright \
     qtc_packaging/debian_harmattan/control \
     qtc_packaging/debian_harmattan/compat \
-    qtc_packaging/debian_harmattan/changelog
+    qtc_packaging/debian_harmattan/changelog \
+    qml/robot/particles.qml
 
 HEADERS += \
     imageprocessor.h \
@@ -63,4 +67,8 @@ HEADERS += \
     camera.h \
     robot.h \
     random.h \
-    particlefilter.h
+    particlefilter.h \
+    movementprovider.h \
+    movement.h \
+    particledisplay.h \
+    settings.h

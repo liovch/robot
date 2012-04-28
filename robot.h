@@ -4,7 +4,11 @@
 #include <QObject>
 #include <QList>
 #include <QPair>
+#include "marker.h"
+#include "movement.h"
 
+// TODO: Rename this to Particle?
+// Robot class could be associated with real Robot sensors.
 class Robot : public QObject
 {
     Q_OBJECT
@@ -31,11 +35,12 @@ public:
 
     // returns list of distances to each unique marker with added sense noise
     QList<qreal> sense() const;
-    void move(qreal turn, qreal forward);
+    void move(const Movement& m);
 
     // TODO: Probably need a separate class for measurement
     // calculates how likely a measurement should be
-    qreal measurementProbability(const QList<qreal>& measurementList) const;
+    // TODO: Change this to QList<Marker> ?
+    qreal measurementProbability(const QList<Marker>& markers) const;
 
     // check if marker is visible from robot's location
     bool isMarkerVisible(const QPair<qreal, qreal>& markerPosition) const;

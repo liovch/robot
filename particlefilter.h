@@ -12,14 +12,15 @@ public:
     explicit ParticleFilter(QObject *parent = 0);
     
     void init(size_t N, qreal maxPosition);
-    void move(qreal turn, qreal forward);
-    void resample(const QList<qreal>& measurementList);
 
     QVector<Robot> particles() const { return m_particles; }
 
 signals:
-    
+    void particlesUpdated(const QVector<Robot>& particles);
+
 public slots:
+    void move(const Movement& m);
+    void resample(const QList<Marker>& markers);
 
 private:
     QVector<Robot> m_particles;

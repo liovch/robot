@@ -20,7 +20,7 @@ public slots:
     void requestNextImage();
 
 private:
-    QFileInfoList m_files;
+    QFileInfoList m_files; // TODO: For now just use predefined images from a folder
 };
 
 #endif // IMAGEPROVIDER_H
