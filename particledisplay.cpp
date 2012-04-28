@@ -6,9 +6,9 @@
 ParticleDisplay::ParticleDisplay(QDeclarativeItem *parent) :
     QDeclarativeItem(parent),
     m_maxPosition(MAX_POSITION), // default world size 10x10 meters
-    m_particleSize(3.0), // default particle size in pixels
+    m_particleSize(2.0), // default particle size in pixels
     m_directionVectorSize(5.0), // default direction vector size in pixels
-    m_markerSize(5.0) // default marker size in pixels
+    m_markerSize(7.0) // default marker size in pixels
 {
     setFlag(QGraphicsItem::ItemHasNoContents, false);
 }
@@ -27,6 +27,9 @@ void ParticleDisplay::setParticles(const QVector<Robot> &particles)
 
 void ParticleDisplay::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+//    painter->scale(1.0, -1.0);
+//    painter->translate(1.0, -boundingRect().height());
+
     // draw markers
     foreach (QObject *obj, gMarkerParams) {
         MarkerParams* params = qobject_cast<MarkerParams*>(obj);

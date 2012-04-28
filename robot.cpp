@@ -113,10 +113,24 @@ qreal Robot::measurementProbability(const QList<Marker> &markers) const
 
 bool Robot::isMarkerVisible(const QPair<qreal, qreal> &markerPosition) const
 {
-    qreal angle = qAtan2(markerPosition.first - m_position.first, markerPosition.second - m_position.second) + 2.0 * M_PI; // TODO: make sure the qAtan2 range is [-pi; pi]
+    // Note: There's a problem with qAtan2. It should be declared as qAtan2(y, x)
+    qreal angle = qAtan2(markerPosition.second - m_position.second, markerPosition.first - m_position.first) + 2.0 * M_PI; // TODO: make sure the qAtan2 range is [-pi; pi]
     angle = fmod(angle, 2.0 * M_PI);
 
     return (qAbs(angle - m_angle) <= gCamera.angleOfView());
+}
+
+bool Robot::isEveryMarkerVisible() const
+{
+    foreach (QObject *obj, gMarkerParams) {
+        MarkerParams* params = qobject_cast<MarkerParams*>(obj);
+        Q_ASSERT(params);
+
+        if (!isMarkerVisible(params->position()))
+            return false;
+    }
+
+    return true;
 }
 
 Robot &Robot::operator =(const Robot &r)

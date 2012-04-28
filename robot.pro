@@ -42,7 +42,8 @@ SOURCES += main.cpp \
     particlefilter.cpp \
     movementprovider.cpp \
     movement.cpp \
-    particledisplay.cpp
+    particledisplay.cpp \
+    manager.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -71,4 +72,5 @@ HEADERS += \
     movementprovider.h \
     movement.h \
     particledisplay.h \
-    settings.h
+    settings.h \
+    manager.h

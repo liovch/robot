@@ -21,14 +21,14 @@ Rectangle {
             smooth: true
             fillMode: Image.PreserveAspectFit
             objectName: "image"
-        }
 
-        signal qmlClicked()
+            signal qmlClicked()
 
-        MouseArea {
-            anchors.fill: parent
-            onClicked: {
-                imageRect.qmlClicked()
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    image.qmlClicked()
+                }
             }
         }
     }

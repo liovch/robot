@@ -1,6 +1,7 @@
 #include "particlefilter.h"
 #include "random.h"
 #include "settings.h"
+#include <QDebug>
 
 ParticleFilter::ParticleFilter(QObject *parent) :
     QObject(parent)
@@ -11,7 +12,9 @@ void ParticleFilter::init(size_t N, qreal maxPosition)
 {
     m_particles.resize(N);
     for (int n = 0; n < m_particles.size(); n++) {
-        m_particles[n].random(maxPosition);
+        do {
+            m_particles[n].random(maxPosition);
+        } while (!m_particles[n].isEveryMarkerVisible());
 
         // TODO: Maybe noise could be global parameter
         m_particles[n].setNoiseForward(NOISE_FORWARD);
@@ -22,6 +25,7 @@ void ParticleFilter::init(size_t N, qreal maxPosition)
 
 void ParticleFilter::move(const Movement &m)
 {
+    qDebug() << "move";
     for (int n = 0; n < m_particles.size(); n++) {
         m_particles[n].move(m);
     }
@@ -30,6 +34,7 @@ void ParticleFilter::move(const Movement &m)
 
 void ParticleFilter::resample(const QList<Marker> &markers)
 {
+    qDebug() << "resample";
     size_t N = m_particles.size();
     QVector<qreal> weights(N);
 

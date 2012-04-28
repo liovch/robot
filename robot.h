@@ -44,6 +44,7 @@ public:
 
     // check if marker is visible from robot's location
     bool isMarkerVisible(const QPair<qreal, qreal>& markerPosition) const;
+    bool isEveryMarkerVisible() const;
 
     Robot& operator=(const Robot& r);
 

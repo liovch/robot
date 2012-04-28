@@ -5,9 +5,19 @@ import Robot 1.0
 Rectangle {
     width: 500
     height: 500
+    id: root
 
     ParticleDisplay {
         objectName: "display"
         anchors.fill: parent
+    }
+
+    signal qmlClicked()
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            root.qmlClicked()
+        }
     }
 }
