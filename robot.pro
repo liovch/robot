@@ -38,7 +38,8 @@ SOURCES += main.cpp \
     markerprocessor.cpp \
     camera.cpp \
     robot.cpp \
-    random.cpp
+    random.cpp \
+    particlefilter.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -61,4 +62,5 @@ HEADERS += \
     markerprocessor.h \
     camera.h \
     robot.h \
-    random.h
+    random.h \
+    particlefilter.h

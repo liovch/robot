@@ -10,7 +10,7 @@ class Robot : public QObject
     Q_OBJECT
 public:
     explicit Robot(QObject *parent = 0);
-    explicit Robot(const Robot& robot);
+    Robot(const Robot& robot);
 
     // initialize random robot position and angle
     void random(qreal maxPosition);
@@ -40,6 +40,8 @@ public:
     // check if marker is visible from robot's location
     bool isMarkerVisible(const QPair<qreal, qreal>& markerPosition) const;
 
+    Robot& operator=(const Robot& r);
+
 signals:
     
 public slots:
@@ -50,6 +52,7 @@ private:
 
     // noise
     // TODO: So how do we measure real noise?
+    // TODO: Should we move this out and make them global?
     qreal m_noiseTurn;
     qreal m_noiseForward;
     qreal m_noiseSense; // TODO: This is probably proportional to the distance to the object

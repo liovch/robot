@@ -126,3 +126,14 @@ bool Robot::isMarkerVisible(const QPair<qreal, qreal> &markerPosition) const
     return (qAbs(angle - m_angle) <= gCamera.angleOfView());
 }
 
+Robot &Robot::operator =(const Robot &r)
+{
+    m_position = r.position();
+    m_angle = r.angle();
+    m_noiseTurn = r.noiseTurn();
+    m_noiseForward = r.noiseForward();
+    m_noiseSense = r.noiseSense();
+
+    return *this;
+}
+
