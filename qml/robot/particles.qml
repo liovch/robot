@@ -3,8 +3,8 @@ import QtQuick 1.1
 import Robot 1.0
 
 Rectangle {
-    width: 500
-    height: 500
+    width: 300
+    height: 300
     id: root
 
     ParticleDisplay {

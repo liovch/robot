@@ -4,11 +4,11 @@ import QtQuick 1.1
 
 Rectangle {
     width: 1200
-    height: 450
+    height: 355
 
     Item {
-        width: 800
-        height: 450
+        width: 600
+        height: 338
         id: imageRect
         objectName: "imageRect"
         anchors.left: parent.left

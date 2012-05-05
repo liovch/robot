@@ -22,11 +22,11 @@ bool Manager::init()
     qmlRegisterType<ParticleDisplay>("Robot", 1, 0, "ParticleDisplay");
     particleViewer.setMainQmlFile(QLatin1String("qml/robot/particles.qml"));
 
-    imageProvider.setDir("/Volumes/Working/liovch/data/robot/test_N9", "*.jpg");
+    imageProvider.setDir("../../data/robot/test_N9", "*.jpg");
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
     markerProcessor.setImageDisplay(imageViewerQML);
-    markerProcessor.setOutputDirectory("/Volumes/Working/liovch/data/robot/output");
+    markerProcessor.setOutputDirectory("../../data/robot/output");
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
@@ -65,7 +65,7 @@ bool Manager::init()
     QRect geometry = imageViewer.geometry();
     imageViewer.setGeometry(300, 600, geometry.width(), geometry.height());
     geometry = particleViewer.geometry();
-    particleViewer.setGeometry(300, 100, geometry.width(), geometry.height());
+    particleViewer.setGeometry(300, 15, geometry.width(), geometry.height());
 
     return true;
 }
