@@ -2,9 +2,13 @@
 #include <QDeclarativeContext>
 #include <QDeclarativeItem>
 #include <QDebug>
-#include "particledisplay.h"
 #include "settings.h"
+#ifndef MEEGO_EDITION_HARMATTAN
+#include "particledisplay.h"
 #include "folderimageprovider.h"
+#else
+#include "cameraimageprovider.h"
+#endif
 
 Manager::Manager(QObject *parent) :
     QObject(parent),
@@ -15,6 +19,7 @@ Manager::Manager(QObject *parent) :
 
 bool Manager::init()
 {
+#ifndef MEEGO_EDITION_HARMATTAN
     imageViewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     particleViewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
 
@@ -26,20 +31,28 @@ bool Manager::init()
 
     FolderImageProvider *imageProvider = new FolderImageProvider(this);
     imageProvider->setDir("../../data/robot/test_N9", "*.jpg");
-    m_imageProvider = imageProvider;
+
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
     markerProcessor.setImageDisplay(imageViewerQML);
     markerProcessor.setOutputDirectory("../../data/robot/output");
+#else
+    CameraImageProvider *imageProvider = new CameraImageProvider(this);
+#endif
+
+    m_imageProvider = imageProvider;
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), &imageProcessor, SLOT(processImage(QImage)));
+#ifndef MEEGO_EDITION_HARMATTAN
     QObject::connect(&imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
     QObject::connect(&imageProcessor, SIGNAL(newMarkerMap(QVector<MarkerParams::MarkerId>,int,int)), &markerProcessor, SLOT(processMarkerMap(QVector<MarkerParams::MarkerId>,int,int)));
+#endif
     QObject::connect(&movementProvider, SIGNAL(nextMovement(Movement)), &particleFilter, SLOT(move(Movement)));
     QObject::connect(&imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
 
+#ifndef MEEGO_EDITION_HARMATTAN
     // connect QML components
     // connect mouse
     QObject::connect(imageViewerQML, SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
@@ -70,7 +83,7 @@ bool Manager::init()
     imageViewer.setGeometry(300, 600, geometry.width(), geometry.height());
     geometry = particleViewer.geometry();
     particleViewer.setGeometry(300, 15, geometry.width(), geometry.height());
-
+#endif
     return true;
 }
 

@@ -2,6 +2,10 @@
 #include <qmath.h>
 #include <QTime>
 
+#ifndef RAND_MAX
+#define	RAND_MAX 2147483647 // TODO: Check if this is correct on Harmattan
+#endif
+
 Random gRandom;
 
 Random::Random(QObject *parent) :

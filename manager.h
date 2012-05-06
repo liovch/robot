@@ -2,12 +2,15 @@
 #define MANAGER_H
 
 #include <QObject>
-#include "qmlapplicationviewer.h"
+#include "qplatformdefs.h"
 #include "imageprovider.h"
 #include "imageprocessor.h"
-#include "markerprocessor.h"
 #include "movementprovider.h"
 #include "particlefilter.h"
+#ifndef MEEGO_EDITION_HARMATTAN
+#include "qmlapplicationviewer.h"
+#include "markerprocessor.h"
+#endif
 
 class Manager : public QObject
 {
@@ -23,14 +26,18 @@ public slots:
     void mouseClicked();
 
 private:
+#ifndef MEEGO_EDITION_HARMATTAN
     QmlApplicationViewer imageViewer;
     QmlApplicationViewer particleViewer;
+#endif
 
     MovementProvider movementProvider;
     ImageProvider *m_imageProvider;
     ImageProcessor imageProcessor;
-    MarkerProcessor markerProcessor;
     ParticleFilter particleFilter;
+#ifndef MEEGO_EDITION_HARMATTAN
+    MarkerProcessor markerProcessor;
+#endif
 
     bool m_movementRequest; // used to alternate between movement and measurement updates
 };

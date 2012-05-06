@@ -1,6 +1,7 @@
 #include <QtGui/QApplication>
 #include <QDebug>
 #include "manager.h"
+#include "qmlapplicationviewer.h"
 
 Q_DECL_EXPORT int main(int argc, char *argv[])
 {

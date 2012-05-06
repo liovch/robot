@@ -29,12 +29,16 @@ CONFIG += qdeclarative-boostable
 # Add dependency to Symbian components
 # CONFIG += qt-components
 
+contains(MEEGO_EDITION,harmattan) {
+    CONFIG += mobility
+    MOBILITY = multimedia
+}
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     imageprocessor.cpp \
     marker.cpp \
     markerparams.cpp \
-    markerprocessor.cpp \
     camera.cpp \
     robot.cpp \
     random.cpp \
@@ -43,8 +47,14 @@ SOURCES += main.cpp \
     movement.cpp \
     particledisplay.cpp \
     manager.cpp \
-    folderimageprovider.cpp \
     imageprovider.cpp
+contains(MEEGO_EDITION,harmattan) {
+    SOURCES += cameraimageprovider.cpp
+}
+!contains(MEEGO_EDITION,harmattan) {
+    SOURCES += folderimageprovider.cpp \
+               markerprocessor.cpp
+}
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -57,14 +67,12 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/copyright \
     qtc_packaging/debian_harmattan/control \
     qtc_packaging/debian_harmattan/compat \
-    qtc_packaging/debian_harmattan/changelog \
-    qml/robot/particles.qml
+    qtc_packaging/debian_harmattan/changelog
 
 HEADERS += \
     imageprocessor.h \
     marker.h \
     markerparams.h \
-    markerprocessor.h \
     camera.h \
     robot.h \
     random.h \
@@ -74,5 +82,11 @@ HEADERS += \
     particledisplay.h \
     settings.h \
     manager.h \
-    folderimageprovider.h \
     imageprovider.h
+contains(MEEGO_EDITION,harmattan) {
+    HEADERS += cameraimageprovider.h
+}
+!contains(MEEGO_EDITION,harmattan) {
+    HEADERS += folderimageprovider.h \
+               markerprocessor.h
+}
