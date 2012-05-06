@@ -136,7 +136,7 @@ void initMarkerParams()
     QRgb rangeMin = qRgb(0, 80, 105);
     QRgb rangeMax = qRgb(70, 115, 160);
     marker->setRange(QPair<QRgb, QRgb>(rangeMin, rangeMax));
-    marker->setPosition(QPair<qreal, qreal>(1.0, 3.0));
+    marker->setPosition(QPair<qreal, qreal>(0.0, 3.0));
     gMarkerParams.append(marker);
 
     // green marker
@@ -147,7 +147,7 @@ void initMarkerParams()
     rangeMin = qRgb(0, 115, 27);
     rangeMax = qRgb(77, 187, 124);
     marker->setRange(QPair<QRgb, QRgb>(rangeMin, rangeMax));
-    marker->setPosition(QPair<qreal, qreal>(1.0, 2.0));
+    marker->setPosition(QPair<qreal, qreal>(0.0, 2.0));
     gMarkerParams.append(marker);
 
     // red marker
