@@ -24,10 +24,10 @@ bool Manager::init()
     particleViewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
 
     imageViewer.rootContext()->setContextProperty("markerParamsModel", QVariant::fromValue(gMarkerParams));
-    imageViewer.setMainQmlFile(QLatin1String("qml/robot/main.qml"));
+    imageViewer.setMainQmlFile(QLatin1String("qml/robot/imageviewer.qml"));
 
     qmlRegisterType<ParticleDisplay>("Robot", 1, 0, "ParticleDisplay");
-    particleViewer.setMainQmlFile(QLatin1String("qml/robot/particles.qml"));
+    particleViewer.setMainQmlFile(QLatin1String("qml/robot/particleviewer.qml"));
 
     FolderImageProvider *imageProvider = new FolderImageProvider(this);
     imageProvider->setDir("../../data/robot/test_N9", "*.jpg");
@@ -38,6 +38,10 @@ bool Manager::init()
     markerProcessor.setOutputDirectory("../../data/robot/output");
 #else
     CameraImageProvider *imageProvider = new CameraImageProvider(this);
+    if (!imageProvider->init()) {
+        qDebug() << "Failed to initialize camera";
+        return false;
+    }
 #endif
 
     m_imageProvider = imageProvider;
@@ -83,6 +87,8 @@ bool Manager::init()
     imageViewer.setGeometry(300, 600, geometry.width(), geometry.height());
     geometry = particleViewer.geometry();
     particleViewer.setGeometry(300, 15, geometry.width(), geometry.height());
+#else
+    mouseClicked(); // request first data to show something on the screen at startup
 #endif
     return true;
 }
