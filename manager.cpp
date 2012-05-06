@@ -4,9 +4,11 @@
 #include <QDebug>
 #include "particledisplay.h"
 #include "settings.h"
+#include "folderimageprovider.h"
 
 Manager::Manager(QObject *parent) :
     QObject(parent),
+    m_imageProvider(0),
     m_movementRequest(true)
 {
 }
@@ -22,7 +24,9 @@ bool Manager::init()
     qmlRegisterType<ParticleDisplay>("Robot", 1, 0, "ParticleDisplay");
     particleViewer.setMainQmlFile(QLatin1String("qml/robot/particles.qml"));
 
-    imageProvider.setDir("../../data/robot/test_N9", "*.jpg");
+    FolderImageProvider *imageProvider = new FolderImageProvider(this);
+    imageProvider->setDir("../../data/robot/test_N9", "*.jpg");
+    m_imageProvider = imageProvider;
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
     markerProcessor.setImageDisplay(imageViewerQML);
@@ -30,7 +34,7 @@ bool Manager::init()
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
-    QObject::connect(&imageProvider, SIGNAL(nextImage(QImage)), &imageProcessor, SLOT(processImage(QImage)));
+    QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), &imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(&imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
     QObject::connect(&imageProcessor, SIGNAL(newMarkerMap(QVector<MarkerParams::MarkerId>,int,int)), &markerProcessor, SLOT(processMarkerMap(QVector<MarkerParams::MarkerId>,int,int)));
     QObject::connect(&movementProvider, SIGNAL(nextMovement(Movement)), &particleFilter, SLOT(move(Movement)));
@@ -75,7 +79,7 @@ void Manager::mouseClicked()
     if (m_movementRequest) {
         movementProvider.requestNextMovement();
     } else {
-        imageProvider.requestNextImage();
+        m_imageProvider->requestNextImage();
     }
 
     m_movementRequest = !m_movementRequest;

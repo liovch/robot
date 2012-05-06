@@ -3,9 +3,9 @@
 
 #include <QObject>
 #include <QFileInfo>
-#include <QImage>
+#include "imageprovider.h"
 
-class FolderImageProvider : public QObject
+class FolderImageProvider : public ImageProvider
 {
     Q_OBJECT
 public:
@@ -13,10 +13,7 @@ public:
 
     void setDir(const QString& path, const QString& nameFilter);
 
-signals:
-    void nextImage(const QImage& image);
-
-public slots:
+public: // slots
     void requestNextImage();
 
 private:

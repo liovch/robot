@@ -43,7 +43,8 @@ SOURCES += main.cpp \
     movement.cpp \
     particledisplay.cpp \
     manager.cpp \
-    folderimageprovider.cpp
+    folderimageprovider.cpp \
+    imageprovider.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -73,4 +74,5 @@ HEADERS += \
     particledisplay.h \
     settings.h \
     manager.h \
-    folderimageprovider.h
+    folderimageprovider.h \
+    imageprovider.h

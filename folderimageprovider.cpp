@@ -5,7 +5,7 @@
 #include "camera.h"
 
 FolderImageProvider::FolderImageProvider(QObject *parent) :
-    QObject(parent)
+    ImageProvider(parent)
 {
 }
 
