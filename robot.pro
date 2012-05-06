@@ -34,7 +34,6 @@ SOURCES += main.cpp \
     imageprocessor.cpp \
     marker.cpp \
     markerparams.cpp \
-    imageprovider.cpp \
     markerprocessor.cpp \
     camera.cpp \
     robot.cpp \
@@ -43,7 +42,8 @@ SOURCES += main.cpp \
     movementprovider.cpp \
     movement.cpp \
     particledisplay.cpp \
-    manager.cpp
+    manager.cpp \
+    folderimageprovider.cpp
 
 # Please do not modify the following two lines. Required for deployment.
 include(qmlapplicationviewer/qmlapplicationviewer.pri)
@@ -63,7 +63,6 @@ HEADERS += \
     imageprocessor.h \
     marker.h \
     markerparams.h \
-    imageprovider.h \
     markerprocessor.h \
     camera.h \
     robot.h \
@@ -73,4 +72,5 @@ HEADERS += \
     movement.h \
     particledisplay.h \
     settings.h \
-    manager.h
+    manager.h \
+    folderimageprovider.h

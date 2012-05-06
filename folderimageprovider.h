@@ -1,15 +1,15 @@
-#ifndef IMAGEPROVIDER_H
-#define IMAGEPROVIDER_H
+#ifndef FOLDERIMAGEPROVIDER_H
+#define FOLDERIMAGEPROVIDER_H
 
 #include <QObject>
 #include <QFileInfo>
 #include <QImage>
 
-class ImageProvider : public QObject
+class FolderImageProvider : public QObject
 {
     Q_OBJECT
 public:
-    explicit ImageProvider(QObject *parent = 0);
+    explicit FolderImageProvider(QObject *parent = 0);
 
     void setDir(const QString& path, const QString& nameFilter);
 
@@ -23,4 +23,4 @@ private:
     QFileInfoList m_files; // TODO: For now just use predefined images from a folder
 };
 
-#endif // IMAGEPROVIDER_H
+#endif // FOLDERIMAGEPROVIDER_H

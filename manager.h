@@ -27,7 +27,7 @@ private:
     QmlApplicationViewer particleViewer;
 
     MovementProvider movementProvider;
-    ImageProvider imageProvider;
+    FolderImageProvider imageProvider;
     ImageProcessor imageProcessor;
     MarkerProcessor markerProcessor;
     ParticleFilter particleFilter;

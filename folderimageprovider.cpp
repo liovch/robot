@@ -1,19 +1,20 @@
-#include "imageprovider.h"
+#include "folderimageprovider.h"
 #include <QDir>
 #include <QDebug>
+#include <QImageReader>
 #include "camera.h"
 
-ImageProvider::ImageProvider(QObject *parent) :
+FolderImageProvider::FolderImageProvider(QObject *parent) :
     QObject(parent)
 {
 }
 
-void ImageProvider::setDir(const QString &path, const QString &nameFilter)
+void FolderImageProvider::setDir(const QString &path, const QString &nameFilter)
 {
     m_files = QDir(path, nameFilter).entryInfoList();
 }
 
-void ImageProvider::requestNextImage()
+void FolderImageProvider::requestNextImage()
 {
     QFileInfo file;
     QImage image;
