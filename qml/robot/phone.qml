@@ -26,6 +26,13 @@ Item {
     }
 
     Rectangle {
+        width: 854
+        height: 3
+        color: "white"
+        anchors.verticalCenter: parent.verticalCenter
+    }
+
+    Rectangle {
         id: captureButton
         anchors.bottom: parent.bottom
         anchors.right: parent.right
