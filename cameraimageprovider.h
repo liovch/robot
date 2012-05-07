@@ -2,7 +2,6 @@
 #define CAMERAIMAGEPROVIDER_H
 
 #include "imageprovider.h"
-#include <QDeclarativeEngine>
 
 class CameraImageProvider : public ImageProvider
 {
@@ -10,18 +9,17 @@ class CameraImageProvider : public ImageProvider
 public:
     explicit CameraImageProvider(QObject *parent = 0);
 
-    void init(QObject *camera, QDeclarativeEngine *engine);
+    void init(QObject *camera);
 
     // slots
     void requestNextImage();
 signals:
 
 public slots:
-    void processCapturedImage(const QString& preview);
+    void processImageSaved(const QString& file);
 
 private:
     QObject *m_camera;
-    QDeclarativeEngine *m_engine;
 };
 
 #endif // CAMERAIMAGEPROVIDER_H

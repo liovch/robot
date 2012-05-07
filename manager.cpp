@@ -43,7 +43,7 @@ bool Manager::init()
     CameraImageProvider *imageProvider = new CameraImageProvider(this);
     QObject *camera = m_phoneUI.rootObject()->findChild<QObject *>(QString("camera"));
     Q_ASSERT(camera);
-    imageProvider->init(camera, m_phoneUI.engine());
+    imageProvider->init(camera);
 #endif
 
     m_imageProvider = imageProvider;
