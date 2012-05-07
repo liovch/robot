@@ -30,7 +30,7 @@ bool Manager::init()
     particleViewer.setMainQmlFile(QLatin1String("qml/robot/particleviewer.qml"));
 
     FolderImageProvider *imageProvider = new FolderImageProvider(this);
-    imageProvider->setDir("../../data/robot/test_N9", "*.jpg");
+    imageProvider->setDir("../../data/robot/test", "*.jpg");
 
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
@@ -41,10 +41,9 @@ bool Manager::init()
     m_phoneUI.setMainQmlFile("qml/robot/phone.qml");
 
     CameraImageProvider *imageProvider = new CameraImageProvider(this);
-    if (!imageProvider->init()) {
-        qDebug() << "Failed to initialize camera";
-        return false;
-    }
+    QObject *camera = m_phoneUI.rootObject()->findChild<QObject *>(QString("camera"));
+    Q_ASSERT(camera);
+    imageProvider->init(camera, m_phoneUI.engine());
 #endif
 
     m_imageProvider = imageProvider;
@@ -52,10 +51,8 @@ bool Manager::init()
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), &imageProcessor, SLOT(processImage(QImage)));
-#ifndef MEEGO_EDITION_HARMATTAN
     QObject::connect(&imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
     QObject::connect(&imageProcessor, SIGNAL(newMarkerMap(QVector<MarkerParams::MarkerId>,int,int)), &markerProcessor, SLOT(processMarkerMap(QVector<MarkerParams::MarkerId>,int,int)));
-#endif
     QObject::connect(&movementProvider, SIGNAL(nextMovement(Movement)), &particleFilter, SLOT(move(Movement)));
     QObject::connect(&imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
 

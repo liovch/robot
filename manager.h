@@ -8,9 +8,7 @@
 #include "movementprovider.h"
 #include "particlefilter.h"
 #include "qmlapplicationviewer.h"
-#ifndef MEEGO_EDITION_HARMATTAN
 #include "markerprocessor.h"
-#endif
 
 class Manager : public QObject
 {
@@ -37,9 +35,7 @@ private:
     ImageProvider *m_imageProvider;
     ImageProcessor imageProcessor;
     ParticleFilter particleFilter;
-#ifndef MEEGO_EDITION_HARMATTAN
     MarkerProcessor markerProcessor;
-#endif
 
     bool m_movementRequest; // used to alternate between movement and measurement updates
 };

@@ -1,4 +1,5 @@
 #include "markerprocessor.h"
+#include "qplatformdefs.h"
 #include <QImage>
 #include <QDir>
 #include "markerparams.h"
@@ -26,6 +27,7 @@ void MarkerProcessor::processMarkers(const QList<Marker> &markers)
 
 void MarkerProcessor::processMarkerMap(const QVector<MarkerParams::MarkerId> &markerMap, int width, int height)
 {
+#ifndef MEEGO_EDITION_HARMATTAN
     QImage image(width, height, QImage::Format_ARGB32);
     if (image.isNull())
         return;
@@ -72,6 +74,11 @@ void MarkerProcessor::processMarkerMap(const QVector<MarkerParams::MarkerId> &ma
     if (m_display) {
         m_display->setProperty("source", filepath);
     }
+#else
+    Q_UNUSED(markerMap);
+    Q_UNUSED(width);
+    Q_UNUSED(height);
+#endif
 }
 
 QRgb MarkerProcessor::markerColor(MarkerParams::MarkerId id)

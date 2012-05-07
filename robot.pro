@@ -30,6 +30,7 @@ CONFIG += qdeclarative-boostable
 # CONFIG += qt-components
 
 contains(MEEGO_EDITION,harmattan) {
+    QT += declarative
     CONFIG += mobility
     MOBILITY = multimedia
 }
@@ -47,13 +48,13 @@ SOURCES += main.cpp \
     movement.cpp \
     particledisplay.cpp \
     manager.cpp \
-    imageprovider.cpp
+    imageprovider.cpp \
+    markerprocessor.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES += cameraimageprovider.cpp
 }
 !contains(MEEGO_EDITION,harmattan) {
-    SOURCES += folderimageprovider.cpp \
-               markerprocessor.cpp
+    SOURCES += folderimageprovider.cpp
 }
 
 # Please do not modify the following two lines. Required for deployment.
@@ -82,11 +83,11 @@ HEADERS += \
     particledisplay.h \
     settings.h \
     manager.h \
-    imageprovider.h
+    imageprovider.h \
+    markerprocessor.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS += cameraimageprovider.h
 }
 !contains(MEEGO_EDITION,harmattan) {
-    HEADERS += folderimageprovider.h \
-               markerprocessor.h
+    HEADERS += folderimageprovider.h
 }

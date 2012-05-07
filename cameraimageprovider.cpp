@@ -1,55 +1,52 @@
 #include "cameraimageprovider.h"
 #include <QDebug>
 #include "camera.h"
+#include <QDeclarativeImageProvider>
 
 CameraImageProvider::CameraImageProvider(QObject *parent) :
     ImageProvider(parent),
     m_camera(0),
-    m_mediaRecorder(0),
-    m_imageCapture(0)
+    m_engine(0)
 {
 }
 
-CameraImageProvider::~CameraImageProvider()
+void CameraImageProvider::init(QObject *camera, QDeclarativeEngine *engine)
 {
-    delete m_mediaRecorder;
-    delete m_imageCapture;
-    delete m_camera;
-}
-
-bool CameraImageProvider::init()
-{
-    m_camera = new QCamera();
-    m_mediaRecorder = new QMediaRecorder(m_camera);
-    m_imageCapture = new QCameraImageCapture(m_camera);
-    if (!m_camera->isCaptureModeSupported(QCamera::CaptureStillImage)) {
-        qDebug() << "Still image capture mode is not supported";
-        return false;
-    }
-
-    // TODO: Connect to camera error signal
-    // connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()));
-
-    m_camera->setCaptureMode(QCamera::CaptureStillImage);
-    m_camera->start();
-
-    //connect(m_imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)));
-    connect(m_imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)));
-    //connect(m_imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)));
-    return true;
+    m_camera = camera;
+    m_engine = engine;
+    QObject::connect(camera, SIGNAL(imageCaptured(QString)), this, SLOT(processCapturedImage(QString)));
 }
 
 void CameraImageProvider::requestNextImage()
 {
-    Q_ASSERT(m_imageCapture);
-    m_imageCapture->capture();
+    Q_ASSERT(m_camera);
+    QMetaObject::invokeMethod(m_camera, "captureImage", Qt::AutoConnection);
 }
 
-void CameraImageProvider::processCapturedImage(int id, const QImage &preview)
+void CameraImageProvider::processCapturedImage(const QString &preview)
 {
-    Q_UNUSED(id);
+    Q_ASSERT(m_engine);
+    // TODO: Make sure image provider id is always 'camera'.
+    //       Check the preview URL.
+    QDeclarativeImageProvider *imageProvider = m_engine->imageProvider("camera");
+    if (!imageProvider) {
+        qDebug() << "Image provider not found";
+        return;
+    }
 
-    QImage image = preview;
+    qDebug() << Q_FUNC_INFO << preview;
+    int i = preview.lastIndexOf("/");
+    if (i < 0) {
+        qDebug() << "Invalid image URL";
+        return;
+    }
+
+    QString imageID = preview.right(preview.size() - i - 1);
+    qDebug() << "Image ID: " << imageID;
+
+    QSize size;
+    QImage image = imageProvider->requestImage(imageID, 0, size);
+
     if (gCamera.scale()) {
         int newHeight = image.height() / (2 << gCamera.scale());
         image = image.scaledToHeight(newHeight, Qt::SmoothTransformation);

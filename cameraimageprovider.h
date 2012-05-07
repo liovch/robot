@@ -1,32 +1,27 @@
 #ifndef CAMERAIMAGEPROVIDER_H
 #define CAMERAIMAGEPROVIDER_H
 
-#include <qcamera.h>
-#include <qcameraimagecapture.h>
-#include <qmediarecorder.h>
 #include "imageprovider.h"
+#include <QDeclarativeEngine>
 
 class CameraImageProvider : public ImageProvider
 {
     Q_OBJECT
 public:
     explicit CameraImageProvider(QObject *parent = 0);
-    ~CameraImageProvider();
 
-    bool init();
+    void init(QObject *camera, QDeclarativeEngine *engine);
 
     // slots
     void requestNextImage();
-
 signals:
 
 public slots:
-    void processCapturedImage(int id, const QImage &preview);
+    void processCapturedImage(const QString& preview);
 
 private:
-    QCamera *m_camera;
-    QMediaRecorder *m_mediaRecorder;
-    QCameraImageCapture *m_imageCapture;
+    QObject *m_camera;
+    QDeclarativeEngine *m_engine;
 };
 
 #endif // CAMERAIMAGEPROVIDER_H
