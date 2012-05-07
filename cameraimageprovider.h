@@ -3,6 +3,7 @@
 
 #include <qcamera.h>
 #include <qcameraimagecapture.h>
+#include <qmediarecorder.h>
 #include "imageprovider.h"
 
 class CameraImageProvider : public ImageProvider
@@ -10,6 +11,7 @@ class CameraImageProvider : public ImageProvider
     Q_OBJECT
 public:
     explicit CameraImageProvider(QObject *parent = 0);
+    ~CameraImageProvider();
 
     bool init();
 
@@ -23,6 +25,7 @@ public slots:
 
 private:
     QCamera *m_camera;
+    QMediaRecorder *m_mediaRecorder;
     QCameraImageCapture *m_imageCapture;
 };
 

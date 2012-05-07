@@ -9,6 +9,7 @@ class ImageProvider : public QObject
     Q_OBJECT
 public:
     explicit ImageProvider(QObject *parent = 0);
+    virtual ~ImageProvider() { }
     
 signals:
     void nextImage(const QImage& image);

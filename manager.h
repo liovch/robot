@@ -7,8 +7,8 @@
 #include "imageprocessor.h"
 #include "movementprovider.h"
 #include "particlefilter.h"
-#ifndef MEEGO_EDITION_HARMATTAN
 #include "qmlapplicationviewer.h"
+#ifndef MEEGO_EDITION_HARMATTAN
 #include "markerprocessor.h"
 #endif
 
@@ -29,6 +29,8 @@ private:
 #ifndef MEEGO_EDITION_HARMATTAN
     QmlApplicationViewer imageViewer;
     QmlApplicationViewer particleViewer;
+#else
+    QmlApplicationViewer m_phoneUI;
 #endif
 
     MovementProvider movementProvider;

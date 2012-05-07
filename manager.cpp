@@ -37,6 +37,9 @@ bool Manager::init()
     markerProcessor.setImageDisplay(imageViewerQML);
     markerProcessor.setOutputDirectory("../../data/robot/output");
 #else
+    m_phoneUI.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
+    m_phoneUI.setMainQmlFile("qml/robot/phone.qml");
+
     CameraImageProvider *imageProvider = new CameraImageProvider(this);
     if (!imageProvider->init()) {
         qDebug() << "Failed to initialize camera";
@@ -88,7 +91,9 @@ bool Manager::init()
     geometry = particleViewer.geometry();
     particleViewer.setGeometry(300, 15, geometry.width(), geometry.height());
 #else
+    QObject::connect(m_phoneUI.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
     mouseClicked(); // request first data to show something on the screen at startup
+    m_phoneUI.showExpanded();
 #endif
     return true;
 }
