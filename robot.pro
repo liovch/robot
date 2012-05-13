@@ -35,6 +35,16 @@ contains(MEEGO_EDITION,harmattan) {
     MOBILITY = multimedia
 }
 
+
+# ARToolkitPlus
+LIBS += -L$$(ARTKP)/lib -lARToolKitPlus
+DEPENDPATH      += $$(ARTKP)/include
+INCLUDEPATH     += $$(ARTKP)/include
+LIBS            += -L$$(ARTKP)/lib
+VERSION         = 2.0.2
+LANGUAGE = C++
+
+
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     marker.cpp \
@@ -50,7 +60,8 @@ SOURCES += main.cpp \
     imageprovider.cpp \
     markerprocessor.cpp \
     thresholdimageprocessor.cpp \
-    imageprocessor.cpp
+    imageprocessor.cpp \
+    artoolkitimageprocessor.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES += cameraimageprovider.cpp
 }
@@ -86,7 +97,8 @@ HEADERS += \
     imageprovider.h \
     markerprocessor.h \
     thresholdimageprocessor.h \
-    imageprocessor.h
+    imageprocessor.h \
+    artoolkitimageprocessor.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS += cameraimageprovider.h
 }

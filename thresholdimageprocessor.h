@@ -11,6 +11,8 @@ public:
 
     // slots:
     void processImage(const QImage& image);
+
+public slots:
     void processLastImage();
 
 private:

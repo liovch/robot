@@ -24,7 +24,6 @@ signals:
 public slots:
     // finds markers on an image
     virtual void processImage(const QImage& image) = 0;
-    virtual void processLastImage() = 0;
 };
 
 #endif // IMAGEPROCESSOR_H
