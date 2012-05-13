@@ -4,7 +4,7 @@
 #include <QObject>
 #include "qplatformdefs.h"
 #include "imageprovider.h"
-#include "thresholdimageprocessor.h"
+#include "imageprocessor.h"
 #include "movementprovider.h"
 #include "particlefilter.h"
 #include "qmlapplicationviewer.h"
@@ -33,7 +33,7 @@ private:
 
     MovementProvider movementProvider;
     ImageProvider *m_imageProvider;
-    ThresholdImageProcessor imageProcessor;
+    ImageProcessor *m_imageProcessor;
     ParticleFilter particleFilter;
     MarkerProcessor markerProcessor;
 

@@ -1,28 +1,15 @@
 #ifndef THRESHOLDIMAGEPROCESSOR_H
 #define THRESHOLDIMAGEPROCESSOR_H
 
-#include <QObject>
-#include <QImage>
-#include <QList>
-#include "marker.h"
+#include "imageprocessor.h"
 
-class ThresholdImageProcessor : public QObject
+class ThresholdImageProcessor : public ImageProcessor
 {
     Q_OBJECT
 public:
     explicit ThresholdImageProcessor(QObject *parent = 0);
 
-signals:
-    // emited when image processor is ready to process the next image
-    void needNextImage();
-    // emitted after image processor finishes the current image
-    // empty list is emitted if no markers were found on the current image
-    void newMarkers(const QList<Marker>& markers);
-    // emits marker map image with marker locations and middle line
-    void newMarkerMap(const QVector<MarkerParams::MarkerId>& markerMap, int width, int height);
-
-public slots:
-    // finds markers on an image
+    // slots:
     void processImage(const QImage& image);
     void processLastImage();
 

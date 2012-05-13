@@ -10,7 +10,7 @@
 // TODO: What about MIN_DISTANCE ?
 
 ThresholdImageProcessor::ThresholdImageProcessor(QObject *parent) :
-    QObject(parent)
+    ImageProcessor(parent)
 {
     if (gMarkerParams.isEmpty())
         initMarkerParams();

@@ -49,7 +49,8 @@ SOURCES += main.cpp \
     manager.cpp \
     imageprovider.cpp \
     markerprocessor.cpp \
-    thresholdimageprocessor.cpp
+    thresholdimageprocessor.cpp \
+    imageprocessor.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES += cameraimageprovider.cpp
 }
@@ -84,7 +85,8 @@ HEADERS += \
     manager.h \
     imageprovider.h \
     markerprocessor.h \
-    thresholdimageprocessor.h
+    thresholdimageprocessor.h \
+    imageprocessor.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS += cameraimageprovider.h
 }
