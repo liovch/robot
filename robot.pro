@@ -37,7 +37,6 @@ contains(MEEGO_EDITION,harmattan) {
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
-    imageprocessor.cpp \
     marker.cpp \
     markerparams.cpp \
     camera.cpp \
@@ -49,7 +48,8 @@ SOURCES += main.cpp \
     particledisplay.cpp \
     manager.cpp \
     imageprovider.cpp \
-    markerprocessor.cpp
+    markerprocessor.cpp \
+    thresholdimageprocessor.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES += cameraimageprovider.cpp
 }
@@ -71,7 +71,6 @@ OTHER_FILES += \
     qtc_packaging/debian_harmattan/changelog
 
 HEADERS += \
-    imageprocessor.h \
     marker.h \
     markerparams.h \
     camera.h \
@@ -84,7 +83,8 @@ HEADERS += \
     settings.h \
     manager.h \
     imageprovider.h \
-    markerprocessor.h
+    markerprocessor.h \
+    thresholdimageprocessor.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS += cameraimageprovider.h
 }

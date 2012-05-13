@@ -1,16 +1,16 @@
-#ifndef IMAGEPROCESSOR_H
-#define IMAGEPROCESSOR_H
+#ifndef THRESHOLDIMAGEPROCESSOR_H
+#define THRESHOLDIMAGEPROCESSOR_H
 
 #include <QObject>
 #include <QImage>
 #include <QList>
 #include "marker.h"
 
-class ImageProcessor : public QObject
+class ThresholdImageProcessor : public QObject
 {
     Q_OBJECT
 public:
-    explicit ImageProcessor(QObject *parent = 0);
+    explicit ThresholdImageProcessor(QObject *parent = 0);
 
 signals:
     // emited when image processor is ready to process the next image
@@ -39,4 +39,4 @@ private:
     QImage m_lastImage;
 };
 
-#endif // IMAGEPROCESSOR_H
+#endif // THRESHOLDIMAGEPROCESSOR_H

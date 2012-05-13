@@ -1,4 +1,4 @@
-#include "imageprocessor.h"
+#include "thresholdimageprocessor.h"
 #include "camera.h"
 
 // TODO: These shouldn't be in pixels, but in mm?
@@ -9,7 +9,7 @@
 #define MAX_DISTANCE 5.0 // maximum accepted distance to marker
 // TODO: What about MIN_DISTANCE ?
 
-ImageProcessor::ImageProcessor(QObject *parent) :
+ThresholdImageProcessor::ThresholdImageProcessor(QObject *parent) :
     QObject(parent)
 {
     if (gMarkerParams.isEmpty())
@@ -18,13 +18,13 @@ ImageProcessor::ImageProcessor(QObject *parent) :
     emit needNextImage();
 }
 
-void ImageProcessor::processImage(const QImage &image)
+void ThresholdImageProcessor::processImage(const QImage &image)
 {
     m_lastImage = image;
     processLastImage();
 }
 
-void ImageProcessor::processLastImage()
+void ThresholdImageProcessor::processLastImage()
 {
     QVector<MarkerParams::MarkerId> markerMap = buildMarkerMap(m_lastImage);
     QList<Marker> markers = buildMarkerList(markerMap, m_lastImage.width(), m_lastImage.height());
@@ -33,7 +33,7 @@ void ImageProcessor::processLastImage()
     emit needNextImage();
 }
 
-QVector<MarkerParams::MarkerId> ImageProcessor::buildMarkerMap(const QImage &image)
+QVector<MarkerParams::MarkerId> ThresholdImageProcessor::buildMarkerMap(const QImage &image)
 {
     QVector<MarkerParams::MarkerId> markerMap(image.width() * image.height(), MARKER_NULL);
 
@@ -56,7 +56,7 @@ QVector<MarkerParams::MarkerId> ImageProcessor::buildMarkerMap(const QImage &ima
     return markerMap;
 }
 
-QList<Marker> ImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> markerMap, int width, int height)
+QList<Marker> ThresholdImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> markerMap, int width, int height)
 {
     QList<Marker> markerList;
 
@@ -156,7 +156,7 @@ QList<Marker> ImageProcessor::buildMarkerList(QVector<MarkerParams::MarkerId> ma
     return markerList;
 }
 
-qreal ImageProcessor::computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below)
+qreal ThresholdImageProcessor::computeMarkerHeight(int *markersOnLine, int markerWidth, int lineSize, int &above, int &below)
 {
     if (markerWidth <= 0) return 0.0;
 
@@ -190,7 +190,7 @@ qreal ImageProcessor::computeMarkerHeight(int *markersOnLine, int markerWidth, i
     return sum / (qreal)markerWidth;
 }
 
-void ImageProcessor::leastSquaresFitting(int *markersOnLine, int width, int height)
+void ThresholdImageProcessor::leastSquaresFitting(int *markersOnLine, int width, int height)
 {
     qreal sumX = 0.0, sumY = 0.0, sumX2 = 0.0, sumXY = 0.0;
     qreal n = 0.0;
@@ -212,12 +212,12 @@ void ImageProcessor::leastSquaresFitting(int *markersOnLine, int width, int heig
     for (int i = 0; i < width; i++) markersOnLine[i] = (int)(a + b * i + 0.5); // TODO: avoid aliasing
 }
 
-int ImageProcessor::maxHorizontalGap() const
+int ThresholdImageProcessor::maxHorizontalGap() const
 {
     return MAX_H_GAP;
 }
 
-int ImageProcessor::maxVerticalGap() const
+int ThresholdImageProcessor::maxVerticalGap() const
 {
     return int(MAX_V_GAP / qreal(2 << gCamera.scale()) + 0.5);
 }
