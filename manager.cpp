@@ -25,6 +25,7 @@ bool Manager::init()
     imageViewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     particleViewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
 
+    initMarkerParams();
     imageViewer.rootContext()->setContextProperty("markerParamsModel", QVariant::fromValue(gMarkerParams));
     imageViewer.setMainQmlFile(QLatin1String("qml/robot/imageviewer.qml"));
 

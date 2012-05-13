@@ -12,9 +12,7 @@
 ThresholdImageProcessor::ThresholdImageProcessor(QObject *parent) :
     ImageProcessor(parent)
 {
-    if (gMarkerParams.isEmpty())
-        initMarkerParams();
-
+    Q_ASSERT(!gMarkerParams.isEmpty());
     emit needNextImage();
 }
 
