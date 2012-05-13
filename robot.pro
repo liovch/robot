@@ -37,6 +37,7 @@ contains(MEEGO_EDITION,harmattan) {
 
 
 # ARToolkitPlus
+DEFINES += USE_AR_TOOLKIT
 LIBS += -L$$(ARTKP)/lib -lARToolKitPlus
 DEPENDPATH      += $$(ARTKP)/include
 INCLUDEPATH     += $$(ARTKP)/include

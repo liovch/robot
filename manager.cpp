@@ -3,7 +3,11 @@
 #include <QDeclarativeItem>
 #include <QDebug>
 #include "settings.h"
+#ifdef USE_AR_TOOLKIT
+#include "artoolkitimageprocessor.h"
+#else
 #include "thresholdimageprocessor.h"
+#endif
 #ifndef MEEGO_EDITION_HARMATTAN
 #include "particledisplay.h"
 #include "folderimageprovider.h"
@@ -33,7 +37,11 @@ bool Manager::init()
     particleViewer.setMainQmlFile(QLatin1String("qml/robot/particleviewer.qml"));
 
     FolderImageProvider *imageProvider = new FolderImageProvider(this);
+#ifdef USE_AR_TOOLKIT
+    imageProvider->setDir("../../data/robot/artoolkit", "*.jpg");
+#else
     imageProvider->setDir("../../data/robot/test", "*.jpg");
+#endif
 
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
@@ -51,7 +59,11 @@ bool Manager::init()
 
     m_imageProvider = imageProvider;
 
+#ifdef USE_AR_TOOLKIT
+    m_imageProcessor = new ARToolkitImageProcessor(this);
+#else
     m_imageProcessor = new ThresholdImageProcessor(this);
+#endif
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
@@ -67,6 +79,7 @@ bool Manager::init()
     QObject::connect(imageViewerQML, SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
     QObject::connect(particleViewer.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
 
+#ifndef USE_AR_TOOLKIT
     // process image every time a parameter is changed
     foreach (QObject* obj, gMarkerParams) {
         MarkerParams *param = qobject_cast<MarkerParams*>(obj);
@@ -78,6 +91,7 @@ bool Manager::init()
         QObject::connect(param, SIGNAL(maxGChanged()), m_imageProcessor, SLOT(processLastImage()));
         QObject::connect(param, SIGNAL(maxBChanged()), m_imageProcessor, SLOT(processLastImage()));
     }
+#endif
     ParticleDisplay *display = particleViewer.rootObject()->findChild<ParticleDisplay *>(QString("display"));
     Q_ASSERT(display);
     QObject::connect(&particleFilter, SIGNAL(particlesUpdated(QVector<Robot>)), display, SLOT(setParticles(QVector<Robot>)));

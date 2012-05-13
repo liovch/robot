@@ -6,8 +6,8 @@
 ARToolKitPlus::PIXEL_FORMAT convertPixelFormat(QImage::Format format)
 {
     switch (format) {
-        case QImage::Format_ARGB32: return ARToolKitPlus::PIXEL_FORMAT_ARGB;
-        case QImage::Format_RGB32: return ARToolKitPlus::PIXEL_FORMAT_RGB;
+        case QImage::Format_RGB32: return ARToolKitPlus::PIXEL_FORMAT_RGBA;
+        case QImage::Format_RGB888: return ARToolKitPlus::PIXEL_FORMAT_RGB;
         default: qDebug() << "Unsupported image format:" << format; break;
     }
 
@@ -20,8 +20,12 @@ ARToolkitImageProcessor::ARToolkitImageProcessor(QObject *parent) :
 
 }
 
-void ARToolkitImageProcessor::processImage(const QImage &image)
+void ARToolkitImageProcessor::processImage(const QImage &img)
 {
+    // TODO: Get rid of pixel format conversion
+    QImage image = img.convertToFormat(QImage::Format_RGB888);
+    qDebug() << "Image format: " << image.format() << image.width() << image.height() << image.bytesPerLine();
+
     // TODO: We probably should initialize this tracker in the constructor
     bool useBCH = false;
 
@@ -44,7 +48,7 @@ void ARToolkitImageProcessor::processImage(const QImage &image)
     // load a camera file. two types of camera files are supported:
     //  - Std. ARToolKit
     //  - MATLAB Camera Calibration Toolbox
-    if(!tracker->init("data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
+    if(!tracker->init("/home/lev/code/robot/data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
         qDebug() << "Failed to initialize tracker";
         return;
     }
@@ -75,7 +79,8 @@ void ARToolkitImageProcessor::processImage(const QImage &image)
     float conf = (float)tracker->getConfidence();
 
     qDebug() << "Found marker" << markerId << "confidence" <<  conf * 100.0 << "\nPose-Matrix:\n";
-    for(int i=0; i<16; i++)
-        printf("%.2f  %s", tracker->getModelViewMatrix()[i], (i%4==3)?"\n  " : "");
+    qDebug() << tracker->getModelViewMatrix()[12]
+             << tracker->getModelViewMatrix()[13]
+             << tracker->getModelViewMatrix()[14];
     // Note: There's also tracker->getProjectionMatrix()
 }
