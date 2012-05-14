@@ -62,7 +62,7 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
 #ifndef MEEGO_EDITION_HARMATTAN
     if(!tracker->init("/home/lev/code/robot/data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
 #else
-    if(!tracker->init("/home/developer/ARToolKitPlus/N9_3mpix.cal", 1.0f, 1000.0f)) {
+    if(!tracker->init("/home/developer/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
 #endif
         qDebug() << "Failed to initialize tracker";
         return;
