@@ -25,7 +25,7 @@ void CameraImageProvider::processImageSaved(const QString &file)
 {
     QFileInfo fileInfo(file);
     QImage image(fileInfo.absoluteFilePath());
-    if (image.width() != 3552 || image.height() != 2000) {
+    if (image.width() != 2304 || image.height() != 1296) {
         qDebug() << "Invalid image resolution";
         return;
     }

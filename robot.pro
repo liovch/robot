@@ -106,3 +106,7 @@ contains(MEEGO_EDITION,harmattan) {
 !contains(MEEGO_EDITION,harmattan) {
     HEADERS += folderimageprovider.h
 }
+
+contains(MEEGO_EDITION,harmattan) {
+    QMAKE_LFLAGS += -Wl,--rpath=/opt/robot/lib
+}

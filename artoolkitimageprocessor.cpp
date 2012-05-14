@@ -1,7 +1,17 @@
 #include "artoolkitimageprocessor.h"
+#include "qplatformdefs.h"
 #include <QScopedPointer>
 #include <QDebug>
 #include "ARToolKitPlus/TrackerSingleMarkerImpl.h"
+
+class MyLogger : public ARToolKitPlus::Logger
+{
+    void artLog(const char* nStr)
+    {
+        qDebug() << nStr;
+    }
+};
+
 
 ARToolKitPlus::PIXEL_FORMAT convertPixelFormat(QImage::Format format)
 {
@@ -37,18 +47,23 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
     //  - can detect a maximum of 8 patterns in one image
     QScopedPointer<ARToolKitPlus::TrackerSingleMarker> tracker(new ARToolKitPlus::TrackerSingleMarkerImpl<6,6,6, 1, 8>(image.width(), image.height()));
 
-    // TODO:
-    // const char* description = tracker->getDescription();
-    // printf("ARToolKitPlus compile-time information:\n%s\n\n", description);
     // set a logger so we can output error messages
-    // tracker->setLogger(&logger);
+    MyLogger logger;
+    tracker->setLogger(&logger);
+
+    const char* description = tracker->getDescription();
+    qDebug() << "ARToolKitPlus compile-time information:" << description;
     tracker->setPixelFormat(convertPixelFormat(image.format()));
     //tracker->setLoadUndistLUT(true);
 
     // load a camera file. two types of camera files are supported:
     //  - Std. ARToolKit
     //  - MATLAB Camera Calibration Toolbox
+#ifndef MEEGO_EDITION_HARMATTAN
     if(!tracker->init("/home/lev/code/robot/data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
+#else
+    if(!tracker->init("/home/developer/ARToolKitPlus/N9_3mpix.cal", 1.0f, 1000.0f)) {
+#endif
         qDebug() << "Failed to initialize tracker";
         return;
     }

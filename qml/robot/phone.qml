@@ -18,7 +18,7 @@ Item {
     //        flashMode: Camera.FlashRedEyeReduction
         whiteBalanceMode: Camera.WhiteBalanceFlash
         exposureCompensation: -1.0
-        captureResolution: "3552x2000"
+        captureResolution: "2304x1296"
 
         onImageCaptured : {
             //photoPreview.source = preview  // Show the preview in an Image element
