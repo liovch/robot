@@ -27,15 +27,30 @@ bool CameraImageProvider::init()
         return false;
     }
 
+    QImageEncoderSettings imageSettings;
+    imageSettings.setCodec("image/jpeg");
+    imageSettings.setResolution(2304, 1296);
+    m_imageCapture->setEncodingSettings(imageSettings);
+
+    QCameraFocus* focus = m_camera->focus();
+    if (!focus || !focus->isAvailable()) {
+        qDebug() << "Camera focus mode is not supported.";
+        return false;
+    }
+    // Note: QCameraFocus::HyperfocalFocus and QCameraFocus::FocusPointCenter are not supported
+    //focus->setFocusPointMode(QCameraFocus::FocusPointCenter);
+    //focus->setFocusMode(QCameraFocus::ManualFocus);
+
     // TODO: Connect to camera error signal
     // connect(camera, SIGNAL(error(QCamera::Error)), this, SLOT(displayCameraError()));
 
     m_camera->setCaptureMode(QCamera::CaptureStillImage);
     m_camera->start();
 
+    // Note: imageCapture signal is emited with a low-res version of an image (853 , 480)
     //connect(m_imageCapture, SIGNAL(readyForCaptureChanged(bool)), this, SLOT(readyForCapture(bool)));
-    connect(m_imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)));
-    //connect(m_imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)));
+    //connect(m_imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(processCapturedImage(int,QImage)));
+    connect(m_imageCapture, SIGNAL(imageSaved(int,QString)), this, SLOT(imageSaved(int,QString)));
     return true;
 }
 
@@ -45,15 +60,9 @@ void CameraImageProvider::requestNextImage()
     m_imageCapture->capture();
 }
 
-void CameraImageProvider::processCapturedImage(int id, const QImage &preview)
+void CameraImageProvider::imageSaved(int, const QString &fileName)
 {
-    Q_UNUSED(id);
-
-    QImage image = preview;
-    if (gCamera.scale()) {
-        int newHeight = image.height() / (2 << gCamera.scale());
-        image = image.scaledToHeight(newHeight, Qt::SmoothTransformation);
-    }
+    QImage image(fileName);
 
     if (!image.isNull())
         emit nextImage(image);

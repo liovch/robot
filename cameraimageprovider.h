@@ -21,7 +21,7 @@ public:
 signals:
 
 public slots:
-    void processCapturedImage(int id, const QImage &preview);
+    void imageSaved(int, const QString& fileName);
 
 private:
     QCamera *m_camera;
