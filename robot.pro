@@ -45,6 +45,8 @@ LIBS            += -L$$(ARTKP)/lib
 VERSION         = 2.0.2
 LANGUAGE = C++
 
+# Camera source
+#DEFINES += USE_DECLARATIVE_CAMERA
 
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
@@ -63,7 +65,8 @@ SOURCES += main.cpp \
     thresholdimageprocessor.cpp \
     imageprocessor.cpp \
     artoolkitimageprocessor.cpp \
-    declarativecameraimageprovider.cpp
+    declarativecameraimageprovider.cpp \
+    cameraimageprovider.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES +=
 }
@@ -101,7 +104,8 @@ HEADERS += \
     thresholdimageprocessor.h \
     imageprocessor.h \
     artoolkitimageprocessor.h \
-    declarativecameraimageprovider.h
+    declarativecameraimageprovider.h \
+    cameraimageprovider.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS +=
 }

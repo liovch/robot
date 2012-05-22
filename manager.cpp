@@ -12,8 +12,12 @@
 #include "particledisplay.h"
 #include "folderimageprovider.h"
 #else
+#ifdef USE_DECLARATIVE_CAMERA
 #include "declarativecameraimageprovider.h"
-#endif
+#else
+#include "cameraimageprovider.h"
+#endif // USE_DECLARATIVE_CAMERA
+#endif // !MEEGO_EDITION_HARMATTAN
 
 Manager::Manager(QObject *parent) :
     QObject(parent),
@@ -49,13 +53,24 @@ bool Manager::init()
     markerProcessor.setOutputDirectory("../../data/robot/output");
 #else
     m_phoneUI.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
+
+#ifdef USE_DECLARATIVE_CAMERA
     m_phoneUI.setMainQmlFile("qml/robot/phone.qml");
 
     DeclarativeCameraImageProvider *imageProvider = new DeclarativeCameraImageProvider(this);
     QObject *camera = m_phoneUI.rootObject()->findChild<QObject *>(QString("camera"));
     Q_ASSERT(camera);
     imageProvider->init(camera);
-#endif
+#else
+    m_phoneUI.setMainQmlFile("qml/robot/camera.qml");
+
+    CameraImageProvider *imageProvider = new CameraImageProvider(this);
+    if (!imageProvider->init()) {
+        qDebug() << "Failed to initialize camera";
+        return false;
+    }
+#endif // USE_DECLARATIVE_CAMERA
+#endif // !MEEGO_EDITION_HARMATTAN
 
     m_imageProvider = imageProvider;
 
