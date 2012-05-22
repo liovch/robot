@@ -62,9 +62,10 @@ SOURCES += main.cpp \
     markerprocessor.cpp \
     thresholdimageprocessor.cpp \
     imageprocessor.cpp \
-    artoolkitimageprocessor.cpp
+    artoolkitimageprocessor.cpp \
+    declarativecameraimageprovider.cpp
 contains(MEEGO_EDITION,harmattan) {
-    SOURCES += cameraimageprovider.cpp
+    SOURCES +=
 }
 !contains(MEEGO_EDITION,harmattan) {
     SOURCES += folderimageprovider.cpp
@@ -99,9 +100,10 @@ HEADERS += \
     markerprocessor.h \
     thresholdimageprocessor.h \
     imageprocessor.h \
-    artoolkitimageprocessor.h
+    artoolkitimageprocessor.h \
+    declarativecameraimageprovider.h
 contains(MEEGO_EDITION,harmattan) {
-    HEADERS += cameraimageprovider.h
+    HEADERS +=
 }
 !contains(MEEGO_EDITION,harmattan) {
     HEADERS += folderimageprovider.h

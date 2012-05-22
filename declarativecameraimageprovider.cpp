@@ -1,27 +1,27 @@
-#include "cameraimageprovider.h"
+#include "declarativecameraimageprovider.h"
 #include <QDebug>
 #include "camera.h"
 #include <QFileInfo>
 
-CameraImageProvider::CameraImageProvider(QObject *parent) :
+DeclarativeCameraImageProvider::DeclarativeCameraImageProvider(QObject *parent) :
     ImageProvider(parent),
     m_camera(0)
 {
 }
 
-void CameraImageProvider::init(QObject *camera)
+void DeclarativeCameraImageProvider::init(QObject *camera)
 {
     m_camera = camera;
     QObject::connect(camera, SIGNAL(imageSaved(QString)), this, SLOT(processImageSaved(QString)));
 }
 
-void CameraImageProvider::requestNextImage()
+void DeclarativeCameraImageProvider::requestNextImage()
 {
     Q_ASSERT(m_camera);
     QMetaObject::invokeMethod(m_camera, "captureImage", Qt::AutoConnection);
 }
 
-void CameraImageProvider::processImageSaved(const QString &file)
+void DeclarativeCameraImageProvider::processImageSaved(const QString &file)
 {
     QFileInfo fileInfo(file);
     QImage image(fileInfo.absoluteFilePath());

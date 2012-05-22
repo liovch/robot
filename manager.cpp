@@ -12,7 +12,7 @@
 #include "particledisplay.h"
 #include "folderimageprovider.h"
 #else
-#include "cameraimageprovider.h"
+#include "declarativecameraimageprovider.h"
 #endif
 
 Manager::Manager(QObject *parent) :
@@ -51,7 +51,7 @@ bool Manager::init()
     m_phoneUI.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     m_phoneUI.setMainQmlFile("qml/robot/phone.qml");
 
-    CameraImageProvider *imageProvider = new CameraImageProvider(this);
+    DeclarativeCameraImageProvider *imageProvider = new DeclarativeCameraImageProvider(this);
     QObject *camera = m_phoneUI.rootObject()->findChild<QObject *>(QString("camera"));
     Q_ASSERT(camera);
     imageProvider->init(camera);
