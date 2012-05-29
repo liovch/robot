@@ -66,7 +66,8 @@ SOURCES += main.cpp \
     imageprocessor.cpp \
     artoolkitimageprocessor.cpp \
     declarativecameraimageprovider.cpp \
-    cameraimageprovider.cpp
+    cameraimageprovider.cpp \
+    fcamimageprovider.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES +=
 }
@@ -105,7 +106,8 @@ HEADERS += \
     imageprocessor.h \
     artoolkitimageprocessor.h \
     declarativecameraimageprovider.h \
-    cameraimageprovider.h
+    cameraimageprovider.h \
+    fcamimageprovider.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS +=
 }
@@ -115,4 +117,11 @@ contains(MEEGO_EDITION,harmattan) {
 
 contains(MEEGO_EDITION,harmattan) {
     QMAKE_LFLAGS += -Wl,--rpath=/opt/robot/lib
+    LIBS += -lFCam -ljpeg
+
+    # Classify the application as a camera
+    cameraclassify.files += qtc_packaging/debian_harmattan/robot.syspart.conf
+    cameraclassify.path = /usr/share/policy/etc/syspart.conf.d
+    INSTALLS += cameraclassify
+    DEFINES += USE_FCAM
 }

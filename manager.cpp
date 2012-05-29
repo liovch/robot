@@ -14,9 +14,13 @@
 #else
 #ifdef USE_DECLARATIVE_CAMERA
 #include "declarativecameraimageprovider.h"
-#else
+#endif
+#ifdef USE_QCAMERA
 #include "cameraimageprovider.h"
-#endif // USE_DECLARATIVE_CAMERA
+#endif
+#ifdef USE_FCAM
+#include "fcamimageprovider.h"
+#endif // USE_FCAM
 #endif // !MEEGO_EDITION_HARMATTAN
 
 Manager::Manager(QObject *parent) :
@@ -61,15 +65,25 @@ bool Manager::init()
     QObject *camera = m_phoneUI.rootObject()->findChild<QObject *>(QString("camera"));
     Q_ASSERT(camera);
     imageProvider->init(camera);
-#else
+#endif
     m_phoneUI.setMainQmlFile("qml/robot/camera.qml");
 
+#ifdef USE_QCAMERA
     CameraImageProvider *imageProvider = new CameraImageProvider(this);
     if (!imageProvider->init()) {
         qDebug() << "Failed to initialize camera";
         return false;
     }
-#endif // USE_DECLARATIVE_CAMERA
+#endif
+
+#ifdef USE_FCAM
+    FCamImageProvider *imageProvider = new FCamImageProvider(this);
+    if (!imageProvider->init()) {
+        qDebug() << "Failed to initialize camera";
+        return false;
+    }
+#endif
+
 #endif // !MEEGO_EDITION_HARMATTAN
 
     m_imageProvider = imageProvider;
