@@ -4,10 +4,6 @@ int E2 = 6;     //M2 Speed Control
 int M1 = 4;    //M1 Direction Control
 int M2 = 7;    //M1 Direction Control
  
-//Wheel Encoders
-volatile int LeftCount = 0;
-volatile int RightCount = 0;
-
 void stop(void)                    //Stop
 {
   digitalWrite(E1,LOW);   
@@ -41,11 +37,60 @@ void turn_R (char a,char b)             //Turn Right
   analogWrite (E2,b);    
   digitalWrite(M2,LOW);
 }
+
+//Wheel Encoders
+int WheelEncoderLeft = 2;
+int WheelEncoderRight = 3;
+volatile int _encoder_step_left=0;
+volatile int _encoder_step_right=0;
+volatile int _old_state_right = 0;
+volatile int _old_state_left = 0;
+
+void reinit_encoders()
+{
+  _encoder_step_left = _encoder_step_right = 0;
+  _old_state_right=digitalRead(WheelEncoderRight);
+  _old_state_left=digitalRead(WheelEncoderLeft);  
+}
+
+void read_encoders()
+{
+    if(get_encoder_step(WheelEncoderRight, _old_state_right))
+    {
+      _encoder_step_right++;
+      Serial.print("Right:");
+      Serial.println(_encoder_step_right);
+    }
+    
+    if(get_encoder_step(WheelEncoderLeft, _old_state_left))
+    {
+      _encoder_step_left++;
+      Serial.print("Left:");
+      Serial.println(_encoder_step_left);
+    }
+}
+
+boolean get_encoder_step(const int iEnc, volatile int &old_dr)
+{
+  int dr=digitalRead(iEnc);
+  if(dr!=old_dr)
+  {
+    old_dr = dr;
+    return true;
+  }
+  
+  return false;
+}
+
 void setup(void) 
 {
-  attachInterrupt(0, LeftEncoderEvent, CHANGE);
-  attachInterrupt(1, RightEncoderEvent, CHANGE);
-  
+  pinMode(WheelEncoderLeft, INPUT);
+  pinMode(WheelEncoderRight, INPUT);
+  reinit_encoders();
+
+  attachInterrupt(0, read_encoders, CHANGE);
+  attachInterrupt(1, read_encoders, CHANGE);
+
   int i;
   for(i=4;i<=7;i++)
     pinMode(i, OUTPUT);
@@ -53,29 +98,8 @@ void setup(void)
   Serial.println("Run keyboard control");
 }
 
-void LeftEncoderEvent()
-{
-  LeftCount++;
-}
- 
-void RightEncoderEvent()
-{
-  RightCount++;
-}
-
 void loop(void) 
 {
-  static unsigned long timer = 0;
-  if(millis() - timer >= 500 && (LeftCount != 0 || RightCount != 0)){   
-    Serial.print("Left Speed: ");
-    Serial.println(LeftCount);
-    Serial.print("Right Speed: ");
-    Serial.println(RightCount);
-    LeftCount = 0;
-    RightCount = 0;
-    timer = millis();
-  }
-
   if (Serial.available()) {
     char val = Serial.read();
     if(val != -1)
@@ -89,10 +113,10 @@ void loop(void)
         back_off (127,127);   //move back at half the speed
         break;
       case 'a'://Turn Left
-        turn_L (100,100);
+        turn_L (127,127);
         break;       
       case 'd'://Turn Right
-        turn_R (100,100);
+        turn_R (127,127);
         break;
       case 'z':
         Serial.println("Hello");
@@ -100,8 +124,12 @@ void loop(void)
       case 'x':
         stop();
         break;
+      case 't': // Test
+        back_off (127, 0); // Move only one wheel
+        break;
       }
     }
     else stop();  
   }
 }
+
