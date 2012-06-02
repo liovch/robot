@@ -4,13 +4,10 @@ int E2 = 6;     //M2 Speed Control
 int M1 = 4;    //M1 Direction Control
 int M2 = 7;    //M1 Direction Control
  
-///For previous Romeo, please use these pins.
-//int E1 = 6;     //M1 Speed Control
-//int E2 = 9;     //M2 Speed Control
-//int M1 = 7;    //M1 Direction Control
-//int M2 = 8;    //M1 Direction Control
- 
- 
+//Wheel Encoders
+volatile int LeftCount = 0;
+volatile int RightCount = 0;
+
 void stop(void)                    //Stop
 {
   digitalWrite(E1,LOW);   
@@ -45,16 +42,41 @@ void turn_R (char a,char b)             //Turn Right
   digitalWrite(M2,LOW);
 }
 void setup(void) 
-{ 
+{
+  attachInterrupt(0, LeftEncoderEvent, CHANGE);
+  attachInterrupt(1, RightEncoderEvent, CHANGE);
+  
   int i;
   for(i=4;i<=7;i++)
-    pinMode(i, OUTPUT);  
+    pinMode(i, OUTPUT);
   Serial.begin(19200);      //Set Baud Rate
   Serial.println("Run keyboard control");
-} 
+}
+
+void LeftEncoderEvent()
+{
+  LeftCount++;
+}
+ 
+void RightEncoderEvent()
+{
+  RightCount++;
+}
+
 void loop(void) 
 {
-  if(Serial.available()){
+  static unsigned long timer = 0;
+  if(millis() - timer >= 500 && (LeftCount != 0 || RightCount != 0)){   
+    Serial.print("Left Speed: ");
+    Serial.println(LeftCount);
+    Serial.print("Right Speed: ");
+    Serial.println(RightCount);
+    LeftCount = 0;
+    RightCount = 0;
+    timer = millis();
+  }
+
+  if (Serial.available()) {
     char val = Serial.read();
     if(val != -1)
     {
@@ -64,7 +86,7 @@ void loop(void)
         advance (255,255);   //move forward in max speed
         break;
       case 's'://Move Backward
-        back_off (255,255);   //move back in max speed
+        back_off (127,127);   //move back at half the speed
         break;
       case 'a'://Turn Left
         turn_L (100,100);
