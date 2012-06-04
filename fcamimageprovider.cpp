@@ -9,13 +9,25 @@ FCamImageProvider::FCamImageProvider(QObject *parent) :
 
 bool FCamImageProvider::init()
 {
+    // Attach the lens to the sensor
+    m_sensor.attach(&m_lens);
+
+    qDebug() << "Near focus:" << m_lens.nearFocus()
+             << "Far focus:" << m_lens.farFocus();
+
     // Explicitly power up the sensor
     if (m_sensor.initialize(0) == -1){
         qDebug() << "Error powering up the sensor.";
         return 1;
     }
 
-    m_shot.exposure = 66000; // 66 ms exposure
+    // Focus to 1D (1m) with maximal speed
+    m_lens.setFocus(1.f, m_lens.maxFocusSpeed());
+    qDebug() << "Changing focus";
+    while (m_lens.focusChanging()) { } // Wait to be done
+    qDebug() << "Focus changed";
+
+    m_shot.exposure = 40000; // 40 ms exposure
     m_shot.gain = 1.0f;      // minimum ISO
 
     // Specify the output resolution and format, and allocate storage for the resulting image

@@ -24,6 +24,7 @@ private:
 
     FCam::N9::Sensor m_sensor;
     FCam::Shot m_shot;
+    FCam::N9::Lens m_lens;
     int m_index;
 };
 
