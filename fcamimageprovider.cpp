@@ -1,4 +1,5 @@
 #include "fcamimageprovider.h"
+#include "camera.h"
 #include <QDebug>
 
 FCamImageProvider::FCamImageProvider(QObject *parent) :
@@ -35,7 +36,7 @@ void FCamImageProvider::requestNextImage()
     shot.gain = 1.0f;      // minimum ISO
 
     // Specify the output resolution and format, and allocate storage for the resulting image
-    shot.image = FCam::Image(2304, 1296, FCam::UYVY);
+    shot.image = FCam::Image(gCamera.width(), gCamera.height(), FCam::UYVY);
 
     // Order the sensor to capture a shot
     sensor.capture(shot);

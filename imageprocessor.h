@@ -11,6 +11,7 @@ class ImageProcessor : public QObject
     Q_OBJECT
 public:
     explicit ImageProcessor(QObject *parent = 0);
+    virtual ~ImageProcessor() { }
     
 signals:
     // emited when image processor is ready to process the next image

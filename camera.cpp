@@ -2,6 +2,8 @@
 #include "markerparams.h"
 #include <qmath.h>
 
+#define CAMERA_WIDTH   2304
+#define CAMERA_HEIGHT  1296
 #ifdef USE_AR_TOOLKIT
 #define CAMERA_SCALE   0        // 2 << CAMERA_SCALE
 #else
@@ -23,6 +25,16 @@ double Camera::distance(const Marker &marker) const
 {
     double scaledPixelHeight = PIXEL_HEIGHT * double(2 << m_scalePowerOfTwo);
     return findMarkerParams(marker.id()).height() * FOCAL_DISTANCE / (marker.height() * scaledPixelHeight);
+}
+
+int Camera::width() const
+{
+    return CAMERA_WIDTH;
+}
+
+int Camera::height() const
+{
+    return CAMERA_HEIGHT;
 }
 
 void Camera::setScale(int powerOfTwo)

@@ -15,6 +15,10 @@ public:
     // calculates distance from camera to marker
     double distance(const Marker& marker) const;
 
+    // returns image width and height in pixels
+    int width() const;
+    int height() const;
+
     // How much the camera image is scaled.
     // Default is 0: 2^0 = 1
     int scale() const { return m_scalePowerOfTwo; }
