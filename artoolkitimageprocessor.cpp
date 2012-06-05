@@ -3,6 +3,8 @@
 #include "ARToolKitPlus/TrackerSingleMarkerImpl.h"
 #include <QDebug>
 
+#define AR_MARKER_WIDTH 150.0f // mm
+
 class ARToolkitLogger : public ARToolKitPlus::Logger
 {
     void artLog(const char* nStr);
@@ -19,14 +21,22 @@ ARToolKitPlus::PIXEL_FORMAT convertPixelFormat(QImage::Format format)
     return (ARToolKitPlus::PIXEL_FORMAT)0;
 }
 
+void convertMarkerInfo(ARMarkerInfo& markerInfo, const ARToolKitPlus::ARMarkerInfo& info)
+{
+    markerInfo.id = info.id;
+    markerInfo.confidence = info.cf;
+    markerInfo.pos[0] = info.pos[0]; markerInfo.pos[1] = info.pos[1];
+    markerInfo.line[0][0] = info.line[0][0]; markerInfo.line[1][0] = info.line[1][0]; markerInfo.line[2][0] = info.line[2][0]; markerInfo.line[3][0] = info.line[3][0];
+    markerInfo.line[0][1] = info.line[0][1]; markerInfo.line[1][1] = info.line[1][1]; markerInfo.line[2][1] = info.line[2][1]; markerInfo.line[3][1] = info.line[3][1];
+    markerInfo.line[0][2] = info.line[0][2]; markerInfo.line[1][2] = info.line[1][2]; markerInfo.line[2][2] = info.line[2][2]; markerInfo.line[3][2] = info.line[3][2];
+    markerInfo.vertex[0][0] = info.vertex[0][0]; markerInfo.vertex[1][0] = info.vertex[1][0]; markerInfo.vertex[2][0] = info.vertex[2][0]; markerInfo.vertex[3][0] = info.vertex[3][0];
+    markerInfo.vertex[0][1] = info.vertex[0][1]; markerInfo.vertex[1][1] = info.vertex[1][1]; markerInfo.vertex[2][1] = info.vertex[2][1]; markerInfo.vertex[3][1] = info.vertex[3][1];
+}
+
 ARToolkitImageProcessor::ARToolkitImageProcessor(QObject *parent) :
     ImageProcessor(parent),
-    m_tracker(0),
-    m_previousX(0.f),
-    m_previousY(0.f),
-    m_previousZ(0.f)
+    m_tracker(0)
 {
-
 }
 
 ARToolkitImageProcessor::~ARToolkitImageProcessor()
@@ -73,7 +83,7 @@ bool ARToolkitImageProcessor::initialize(const QImage& image)
     }
 
     // define size of the marker (in mm)
-    m_tracker->setPatternWidth(150);
+    m_tracker->setPatternWidth(AR_MARKER_WIDTH);
 
     // the marker in the BCH test image has a thin border...
     m_tracker->setBorderWidth(useBCH ? 0.125f : 0.250f);
@@ -86,8 +96,8 @@ bool ARToolkitImageProcessor::initialize(const QImage& image)
     // note: LUT only works with images up to 1024x1024
     m_tracker->setUndistortionMode(ARToolKitPlus::UNDIST_STD);
 
-    // RPP is more robust than ARToolKit's standard pose estimator
-    //m_tracker->setPoseEstimator(ARToolKitPlus::POSE_ESTIMATOR_RPP);
+    // Pose estimator is required to produce OpenGL matrix
+    m_tracker->setPoseEstimator(ARToolKitPlus::POSE_ESTIMATOR_ORIGINAL);
 
     // switch to simple ID based markers
     // use the tool in tools/IdPatGen to generate markers
@@ -110,31 +120,78 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
     if (!m_tracker && !initialize(image))
         return;
 
-    // TODO: Find a way to avoid doing fuzzy compare here.
-    //       Probably the problem is with pose estimator and
-    //       looks like it will be disabled for multimarker mode anyway.
     // here we go, just one call to find the camera pose
     int numMarkers = 0;
-    int markerId = m_tracker->calc(image.bits(), -1, true, NULL, &numMarkers);
-    float markerX = m_tracker->getModelViewMatrix()[12];
-    float markerY = m_tracker->getModelViewMatrix()[13];
-    float markerZ = m_tracker->getModelViewMatrix()[14];
-    if (markerId >= 0 && (!qFuzzyCompare(markerX, m_previousX) ||
-                          !qFuzzyCompare(markerY, m_previousY) ||
-                          !qFuzzyCompare(markerZ, m_previousZ))) {
-        qDebug() << "Number of markers found:" << numMarkers;
-        float conf = (float)m_tracker->getConfidence();
-        qDebug() << "Found marker" << markerId << "confidence" << conf * 100.0 << "\nCoordinates:" << markerX << markerY << markerZ;
-        m_previousX = markerX;
-        m_previousY = markerY;
-        m_previousZ = markerZ;
-        // Note: There's also m_tracker->getProjectionMatrix()
-    } else {
+    ARToolKitPlus::ARMarkerInfo *markerInfo = 0;
+    int bestMarkerId = m_tracker->calc(image.bits(), -1, false, &markerInfo, &numMarkers);
+    if (bestMarkerId < 0) {
         qDebug() << "No markers found";
+        return;
     }
+
+    // TODO: Find out why we're getting duplicate values sometimes
+    bool isValidMarker = false;
+    for (int i = 0; i < numMarkers; i++) {
+        if (markerInfo[i].id < 0 && markerInfo[i].cf <= 0.0)
+            continue;
+
+        ARMarkerInfo m;
+        convertMarkerInfo(m, markerInfo[i]);
+        if (m_previousMarkers.contains(m))
+            continue;
+
+        qDebug() << "Marker:" << markerInfo[i].id << "Confidence:" << markerInfo[i].cf;
+//                 << "pos" << markerInfo[i].pos[0] << markerInfo[i].pos[1] << "\n" <<
+//                    "line\n" << markerInfo[i].line[0][0] << markerInfo[i].line[1][0] << markerInfo[i].line[2][0] << markerInfo[i].line[3][0] << "\n" <<
+//                              markerInfo[i].line[0][1] << markerInfo[i].line[1][1] << markerInfo[i].line[2][1] << markerInfo[i].line[3][1] << "\n" <<
+//                              markerInfo[i].line[0][2] << markerInfo[i].line[1][2] << markerInfo[i].line[2][2] << markerInfo[i].line[3][2] << "\n" <<
+//                    "vertex\n" << markerInfo[i].vertex[0][0] << markerInfo[i].vertex[1][0] << markerInfo[i].vertex[2][0] << markerInfo[i].vertex[3][0] << "\n" <<
+//                                markerInfo[i].vertex[0][1] << markerInfo[i].vertex[1][1] << markerInfo[i].vertex[2][1] << markerInfo[i].vertex[3][1];
+
+        // TODO: Maybe move this stuff into ARToolKit library
+        ARFloat nPatternCenter[2];
+        nPatternCenter[0] = 0.f; nPatternCenter[1] = 0.f;
+        ARFloat	modelView[16];
+        // TODO: Process errors?
+        m_tracker->calcOpenGLMatrixFromMarker(&markerInfo[i], nPatternCenter, AR_MARKER_WIDTH, modelView);
+
+        isValidMarker = true;
+        qDebug() << "Coordinates:" << modelView[12] << modelView[13] << modelView[14];
+    }
+
+    m_previousMarkers.clear();
+    for (int i = 0; i < numMarkers; i++) {
+        ARMarkerInfo m;
+        convertMarkerInfo(m, markerInfo[i]);
+        m_previousMarkers.append(m);
+    }
+
+    if (!isValidMarker)
+        qDebug() << "No markers found: reported duplicate markers";
 }
 
 void ARToolkitLogger::artLog(const char *nStr)
 {
     qDebug() << nStr;
 }
+
+ARMarkerInfo::ARMarkerInfo(const ARMarkerInfo &marker)
+{
+    id = marker.id;
+    confidence = marker.confidence;
+    memcpy(pos, marker.pos, sizeof(pos));
+    memcpy(line, marker.line, sizeof(line));
+    memcpy(vertex, marker.vertex, sizeof(vertex));
+}
+
+bool ARMarkerInfo::operator ==(const ARMarkerInfo &marker)
+{
+    return id == marker.id && qFuzzyCompare(confidence, marker.confidence) &&
+            qFuzzyCompare(pos[0], marker.pos[0]) && qFuzzyCompare(pos[1], marker.pos[1]) &&
+            qFuzzyCompare(line[0][0], marker.line[0][0]) && qFuzzyCompare(line[1][0], marker.line[1][0]) && qFuzzyCompare(line[2][0], marker.line[2][0]) && qFuzzyCompare(line[3][0], marker.line[3][0]) &&
+            qFuzzyCompare(line[0][1], marker.line[0][1]) && qFuzzyCompare(line[1][1], marker.line[1][1]) && qFuzzyCompare(line[2][1], marker.line[2][1]) && qFuzzyCompare(line[3][1], marker.line[3][1]) &&
+            qFuzzyCompare(line[0][2], marker.line[0][2]) && qFuzzyCompare(line[1][2], marker.line[1][2]) && qFuzzyCompare(line[2][2], marker.line[2][2]) && qFuzzyCompare(line[3][2], marker.line[3][2]) &&
+            qFuzzyCompare(vertex[0][0], marker.vertex[0][0]) && qFuzzyCompare(vertex[1][0], marker.vertex[1][0]) && qFuzzyCompare(vertex[2][0], marker.vertex[2][0]) && qFuzzyCompare(vertex[3][0], marker.vertex[3][0]) &&
+            qFuzzyCompare(vertex[0][1], marker.vertex[0][1]) && qFuzzyCompare(vertex[1][1], marker.vertex[1][1]) && qFuzzyCompare(vertex[2][1], marker.vertex[2][1]) && qFuzzyCompare(vertex[3][1], marker.vertex[3][1]);
+}
+
