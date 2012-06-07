@@ -14,9 +14,11 @@ public:
     void init(size_t N, qreal maxPosition);
 
     QVector<Robot> particles() const { return m_particles; }
+    Robot calculatePosition() const;
 
 signals:
     void particlesUpdated(const QVector<Robot>& particles);
+    void estimatedPosition(const Robot& robot);
 
 public slots:
     void move(const Movement& m);

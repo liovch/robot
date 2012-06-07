@@ -99,7 +99,7 @@ bool Manager::init()
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
     QObject::connect(m_imageProcessor, SIGNAL(newMarkerMap(QVector<MarkerParams::MarkerId>,int,int)), &markerProcessor, SLOT(processMarkerMap(QVector<MarkerParams::MarkerId>,int,int)));
-    QObject::connect(&movementProvider, SIGNAL(nextMovement(Movement)), &particleFilter, SLOT(move(Movement)));
+    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
     QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
 
 #ifndef MEEGO_EDITION_HARMATTAN
@@ -146,7 +146,7 @@ bool Manager::init()
 void Manager::mouseClicked()
 {
     if (m_movementRequest) {
-        movementProvider.requestNextMovement();
+        m_motionPlanner.requestNextUpdate(particleFilter.calculatePosition());
     } else {
         m_imageProvider->requestNextImage();
     }
