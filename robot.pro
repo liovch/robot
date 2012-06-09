@@ -48,7 +48,8 @@ SOURCES += main.cpp \
     cameraimageprovider.cpp \
     fcamimageprovider.cpp \
     motionplanner.cpp \
-    motionproxy.cpp
+    motionproxy.cpp \
+    vector2d.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES +=
 }
@@ -89,7 +90,8 @@ HEADERS += \
     cameraimageprovider.h \
     fcamimageprovider.h \
     motionplanner.h \
-    motionproxy.h
+    motionproxy.h \
+    vector2d.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS +=
 }
