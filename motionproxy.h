@@ -5,6 +5,7 @@
 #include "movement.h"
 
 #include <QtMobility/qmobilityglobal.h>
+#include <qbluetoothsocket.h>
 QTM_BEGIN_NAMESPACE
 class QBluetoothSocket;
 QTM_END_NAMESPACE
@@ -40,6 +41,9 @@ signals:
 public slots:
     void motionUpdate(const Movement& m); // This is connected to motion planner
 
+    // bluetooth signals
+    void connected();
+    void error(QBluetoothSocket::SocketError error);
 private:
     QBluetoothSocket *m_socket;
 };
