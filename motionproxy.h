@@ -44,8 +44,12 @@ public slots:
     // bluetooth signals
     void connected();
     void error(QBluetoothSocket::SocketError error);
+    void bluetoothDataReceived();
+
 private:
     QBluetoothSocket *m_socket;
+    quint16 m_encoderReadingLeft;
+    quint16 m_encoderReadingRight;
 };
 
 #endif // MOTIONPROXY_H
