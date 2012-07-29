@@ -27,7 +27,7 @@ Manager::Manager(QObject *parent) :
     QObject(parent),
     m_imageProvider(0),
     m_imageProcessor(0),
-    m_movementRequest(true)
+    m_movementRequest(false)
 {
 }
 
@@ -96,11 +96,16 @@ bool Manager::init()
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
+    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), &m_motionProxy, SLOT(motionUpdate(Movement)));
+    QObject::connect(&m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
+    // TODO: Connect failedMotionUpdate signal to motion planner
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
+    QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
+    QObject::connect(&particleFilter, SIGNAL(estimatedPosition(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
+
+    // TODO: MarkerProcessor is only used to print markers for debugging
     QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
     QObject::connect(m_imageProcessor, SIGNAL(newMarkerMap(QVector<MarkerParams::MarkerId>,int,int)), &markerProcessor, SLOT(processMarkerMap(QVector<MarkerParams::MarkerId>,int,int)));
-    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
-    QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
 
 #ifndef MEEGO_EDITION_HARMATTAN
     // connect QML components
@@ -137,7 +142,7 @@ bool Manager::init()
     particleViewer.setGeometry(300, 15, geometry.width(), geometry.height());
 #else
     QObject::connect(m_phoneUI.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
-    mouseClicked(); // request first data to show something on the screen at startup
+    mouseClicked(); // request first image from camera to start the cycle
     m_phoneUI.showExpanded();
 #endif
     return true;

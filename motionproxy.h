@@ -37,9 +37,21 @@ public:
     explicit MotionProxy(QObject *parent = 0);
     
 signals:
+    // Emited just after robot has finished motionUpdate or failed
+    // to perform motion update.
+    // Parameter indicates the actual movement robot has performed.
+    void finishedMotionUpdate(const Movement& m);
+
+    // Emited when robot was unable to perform the requested motionUpdate.
+    // This signal is emited when there was no feedback from robot's
+    // wheel encoders for a long time. This should indicate that robot is stuck.
+    // finishedMotionUpdate is still emited in this case.
+    void failedMotionUpdate();
     
 public slots:
-    void motionUpdate(const Movement& m); // This is connected to motion planner
+    // Request motion update to perform on the robot.
+    // This is connected to motion planner.
+    void motionUpdate(const Movement& m);
 
     // bluetooth signals
     void connected();
@@ -48,6 +60,8 @@ public slots:
 
 private:
     QBluetoothSocket *m_socket;
+
+    // Data from wheel encoders.
     quint16 m_encoderReadingLeft;
     quint16 m_encoderReadingRight;
 };

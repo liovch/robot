@@ -65,6 +65,7 @@ void ParticleFilter::resample(const QList<Marker> &markers)
 
 Robot ParticleFilter::calculatePosition() const
 {
+    // TODO: Should I take particle probability into account?
     qreal x = 0.0, y = 0.0, angle = 0.0;
     if (m_particles.size() > 0) {
         // orientation is tricky because it is cyclic. By normalizing

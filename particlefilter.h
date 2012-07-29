@@ -17,7 +17,10 @@ public:
     Robot calculatePosition() const;
 
 signals:
+    // Note: This is emited every time particles changed
+    // both after move and resample updates.
     void particlesUpdated(const QVector<Robot>& particles);
+
     void estimatedPosition(const Robot& robot);
 
 public slots:
