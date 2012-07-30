@@ -21,12 +21,6 @@ Camera::Camera(QObject *parent) :
 {
 }
 
-double Camera::distance(const Marker &marker) const
-{
-    double scaledPixelHeight = PIXEL_HEIGHT * double(2 << m_scalePowerOfTwo);
-    return findMarkerParams(marker.id()).height() * FOCAL_DISTANCE / (marker.height() * scaledPixelHeight);
-}
-
 int Camera::width() const
 {
     return CAMERA_WIDTH;

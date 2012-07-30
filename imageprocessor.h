@@ -14,13 +14,9 @@ public:
     virtual ~ImageProcessor() { }
     
 signals:
-    // emited when image processor is ready to process the next image
-    void needNextImage();
     // emitted after image processor finishes the current image
     // empty list is emitted if no markers were found on the current image
-    void newMarkers(const QList<Marker>& markers);
-    // emits marker map image with marker locations and middle line
-    void newMarkerMap(const QVector<MarkerParams::MarkerId>& markerMap, int width, int height);
+    void imageProcessed(const QList<Marker>& markers);
 
 public slots:
     // finds markers on an image

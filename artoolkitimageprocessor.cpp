@@ -3,8 +3,6 @@
 #include "ARToolKitPlus/TrackerSingleMarkerImpl.h"
 #include <QDebug>
 
-#define AR_MARKER_WIDTH 150.0f // mm
-
 class ARToolkitLogger : public ARToolKitPlus::Logger
 {
     void artLog(const char* nStr);
@@ -21,7 +19,7 @@ ARToolKitPlus::PIXEL_FORMAT convertPixelFormat(QImage::Format format)
     return (ARToolKitPlus::PIXEL_FORMAT)0;
 }
 
-void convertMarkerInfo(ARMarkerInfo& markerInfo, const ARToolKitPlus::ARMarkerInfo& info)
+void convertMarkerInfo(Marker& markerInfo, const ARToolKitPlus::ARMarkerInfo& info)
 {
     markerInfo.id = info.id;
     markerInfo.confidence = info.cf;
@@ -83,7 +81,7 @@ bool ARToolkitImageProcessor::initialize(const QImage& image)
     }
 
     // define size of the marker (in mm)
-    m_tracker->setPatternWidth(AR_MARKER_WIDTH);
+    m_tracker->setPatternWidth(MarkerParams::size());
 
     // the marker in the BCH test image has a thin border...
     m_tracker->setBorderWidth(useBCH ? 0.125f : 0.250f);
@@ -129,13 +127,15 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
         return;
     }
 
+    QList<Marker> markers;
+
     // TODO: Find out why we're getting duplicate values sometimes
     bool isValidMarker = false;
     for (int i = 0; i < numMarkers; i++) {
         if (markerInfo[i].id < 0 && markerInfo[i].cf <= 0.0)
             continue;
 
-        ARMarkerInfo m;
+        Marker m;
         convertMarkerInfo(m, markerInfo[i]);
         if (m_previousMarkers.contains(m))
             continue;
@@ -148,50 +148,26 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
 //                    "vertex\n" << markerInfo[i].vertex[0][0] << markerInfo[i].vertex[1][0] << markerInfo[i].vertex[2][0] << markerInfo[i].vertex[3][0] << "\n" <<
 //                                markerInfo[i].vertex[0][1] << markerInfo[i].vertex[1][1] << markerInfo[i].vertex[2][1] << markerInfo[i].vertex[3][1];
 
-        // TODO: Maybe move this stuff into ARToolKit library
+        // TODO: Maybe move this stuff into Marker itself?
         ARFloat nPatternCenter[2];
         nPatternCenter[0] = 0.f; nPatternCenter[1] = 0.f;
-        ARFloat	modelView[16];
         // TODO: Process errors?
-        m_tracker->calcOpenGLMatrixFromMarker(&markerInfo[i], nPatternCenter, AR_MARKER_WIDTH, modelView);
+        m_tracker->calcOpenGLMatrixFromMarker(&markerInfo[i], nPatternCenter, MarkerParams::size(), m.modelView);
 
         isValidMarker = true;
-        qDebug() << "Coordinates:" << modelView[12] << modelView[13] << modelView[14];
+        qDebug() << "Coordinates:" << m.modelView[12] << m.modelView[13] << m.modelView[14];
+        markers.append(m);
     }
 
-    m_previousMarkers.clear();
-    for (int i = 0; i < numMarkers; i++) {
-        ARMarkerInfo m;
-        convertMarkerInfo(m, markerInfo[i]);
-        m_previousMarkers.append(m);
-    }
+    m_previousMarkers = markers;
 
     if (!isValidMarker)
         qDebug() << "No markers found: reported duplicate markers";
+
+    emit imageProcessed(markers);
 }
 
 void ARToolkitLogger::artLog(const char *nStr)
 {
     qDebug() << nStr;
 }
-
-ARMarkerInfo::ARMarkerInfo(const ARMarkerInfo &marker)
-{
-    id = marker.id;
-    confidence = marker.confidence;
-    memcpy(pos, marker.pos, sizeof(pos));
-    memcpy(line, marker.line, sizeof(line));
-    memcpy(vertex, marker.vertex, sizeof(vertex));
-}
-
-bool ARMarkerInfo::operator ==(const ARMarkerInfo &marker)
-{
-    return id == marker.id && qFuzzyCompare(confidence, marker.confidence) &&
-            qFuzzyCompare(pos[0], marker.pos[0]) && qFuzzyCompare(pos[1], marker.pos[1]) &&
-            qFuzzyCompare(line[0][0], marker.line[0][0]) && qFuzzyCompare(line[1][0], marker.line[1][0]) && qFuzzyCompare(line[2][0], marker.line[2][0]) && qFuzzyCompare(line[3][0], marker.line[3][0]) &&
-            qFuzzyCompare(line[0][1], marker.line[0][1]) && qFuzzyCompare(line[1][1], marker.line[1][1]) && qFuzzyCompare(line[2][1], marker.line[2][1]) && qFuzzyCompare(line[3][1], marker.line[3][1]) &&
-            qFuzzyCompare(line[0][2], marker.line[0][2]) && qFuzzyCompare(line[1][2], marker.line[1][2]) && qFuzzyCompare(line[2][2], marker.line[2][2]) && qFuzzyCompare(line[3][2], marker.line[3][2]) &&
-            qFuzzyCompare(vertex[0][0], marker.vertex[0][0]) && qFuzzyCompare(vertex[1][0], marker.vertex[1][0]) && qFuzzyCompare(vertex[2][0], marker.vertex[2][0]) && qFuzzyCompare(vertex[3][0], marker.vertex[3][0]) &&
-            qFuzzyCompare(vertex[0][1], marker.vertex[0][1]) && qFuzzyCompare(vertex[1][1], marker.vertex[1][1]) && qFuzzyCompare(vertex[2][1], marker.vertex[2][1]) && qFuzzyCompare(vertex[3][1], marker.vertex[3][1]);
-}
-

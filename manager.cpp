@@ -26,7 +26,8 @@ bool Manager::init()
     particleViewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
 
     initMarkerParams();
-    imageViewer.rootContext()->setContextProperty("markerParamsModel", QVariant::fromValue(gMarkerParams));
+    // TODO: Need new image viewer?
+//    imageViewer.rootContext()->setContextProperty("markerParamsModel", QVariant::fromValue(gMarkerParams));
     imageViewer.setMainQmlFile(QLatin1String("qml/robot/imageviewer.qml"));
 
     qmlRegisterType<ParticleDisplay>("Robot", 1, 0, "ParticleDisplay");
@@ -37,8 +38,6 @@ bool Manager::init()
 
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
-    markerProcessor.setImageDisplay(imageViewerQML);
-    markerProcessor.setOutputDirectory("../../data/robot/output");
 #else
     m_phoneUI.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     m_phoneUI.setMainQmlFile("qml/robot/camera.qml");
@@ -56,10 +55,10 @@ bool Manager::init()
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
-    QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
+    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
     QObject::connect(m_imageProcessor, SIGNAL(newMarkerMap(QVector<MarkerParams::MarkerId>,int,int)), &markerProcessor, SLOT(processMarkerMap(QVector<MarkerParams::MarkerId>,int,int)));
     QObject::connect(&movementProvider, SIGNAL(nextMovement(Movement)), &particleFilter, SLOT(move(Movement)));
-    QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
+    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
 
 #ifndef MEEGO_EDITION_HARMATTAN
     // connect QML components

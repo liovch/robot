@@ -43,7 +43,7 @@ public:
     qreal measurementProbability(const QList<Marker>& markers) const;
 
     // check if marker is visible from robot's location
-    bool isMarkerVisible(const QPair<qreal, qreal>& markerPosition) const;
+    bool isMarkerVisible(qreal x, qreal y, qreal z) const;
     bool isEveryMarkerVisible() const;
 
     Robot& operator=(const Robot& r);

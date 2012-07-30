@@ -12,9 +12,6 @@ public:
     
     Q_PROPERTY(int scale READ scale WRITE setScale NOTIFY scaleChanged);
 
-    // calculates distance from camera to marker
-    double distance(const Marker& marker) const;
-
     // returns image width and height in pixels
     int width() const;
     int height() const;

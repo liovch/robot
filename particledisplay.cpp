@@ -31,12 +31,9 @@ void ParticleDisplay::paint(QPainter *painter, const QStyleOptionGraphicsItem *,
 //    painter->translate(1.0, -boundingRect().height());
 
     // draw markers
-    foreach (QObject *obj, gMarkerParams) {
-        MarkerParams* params = qobject_cast<MarkerParams*>(obj);
-        Q_ASSERT(params);
-
-        painter->setBrush(QBrush(QColor(params->name())));
-        QPointF p((params->position().first / m_maxPosition) * boundingRect().width(), (params->position().second / m_maxPosition) * boundingRect().height());
+    foreach (MarkerParams params, gMarkerParams) {
+        //TODO: painter->setBrush(QBrush(QColor(params->name())));
+        QPointF p((params.x() / m_maxPosition) * boundingRect().width(), (params.y() / m_maxPosition) * boundingRect().height());
         painter->drawRect(QRectF(p.x() - (m_markerSize / 2.0), p.y() - (m_markerSize / 2.0), m_markerSize, m_markerSize));
     }
 

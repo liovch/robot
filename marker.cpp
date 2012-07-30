@@ -3,40 +3,33 @@
 
 Marker::Marker(QObject *parent) :
     QObject(parent),
-    m_offset(0.0),
-    m_width(0.0),
-    m_height(0.0),
-    m_id(MARKER_NULL),
-    m_above(0.0),
-    m_below(0.0)
+    id(-1)
 {
 }
 
 Marker::Marker(const Marker &marker):
-    QObject(marker.parent()),
-    m_offset(marker.offset()),
-    m_width(marker.width()),
-    m_height(marker.height()),
-    m_id(marker.id()),
-    m_above(marker.above()),
-    m_below(marker.below())
+    QObject(marker.parent())
 {
+    id = marker.id;
+    confidence = marker.confidence;
+    memcpy(pos, marker.pos, sizeof(pos));
+    memcpy(line, marker.line, sizeof(line));
+    memcpy(vertex, marker.vertex, sizeof(vertex));
+    memcpy(modelView, marker.modelView, sizeof(modelView));
 }
 
-Marker &Marker::operator =(const Marker &marker)
+bool Marker::operator==(const Marker& marker)
 {
-    setParent(marker.parent());
-    m_offset = marker.offset();
-    m_width = marker.width();
-    m_height = marker.height();
-    m_id = marker.id();
-    m_above = marker.above();
-    m_below = marker.below();
-
-    return *this;
+    return id == marker.id && qFuzzyCompare(confidence, marker.confidence) &&
+            qFuzzyCompare(pos[0], marker.pos[0]) && qFuzzyCompare(pos[1], marker.pos[1]) &&
+            qFuzzyCompare(line[0][0], marker.line[0][0]) && qFuzzyCompare(line[1][0], marker.line[1][0]) && qFuzzyCompare(line[2][0], marker.line[2][0]) && qFuzzyCompare(line[3][0], marker.line[3][0]) &&
+            qFuzzyCompare(line[0][1], marker.line[0][1]) && qFuzzyCompare(line[1][1], marker.line[1][1]) && qFuzzyCompare(line[2][1], marker.line[2][1]) && qFuzzyCompare(line[3][1], marker.line[3][1]) &&
+            qFuzzyCompare(line[0][2], marker.line[0][2]) && qFuzzyCompare(line[1][2], marker.line[1][2]) && qFuzzyCompare(line[2][2], marker.line[2][2]) && qFuzzyCompare(line[3][2], marker.line[3][2]) &&
+            qFuzzyCompare(vertex[0][0], marker.vertex[0][0]) && qFuzzyCompare(vertex[1][0], marker.vertex[1][0]) && qFuzzyCompare(vertex[2][0], marker.vertex[2][0]) && qFuzzyCompare(vertex[3][0], marker.vertex[3][0]) &&
+            qFuzzyCompare(vertex[0][1], marker.vertex[0][1]) && qFuzzyCompare(vertex[1][1], marker.vertex[1][1]) && qFuzzyCompare(vertex[2][1], marker.vertex[2][1]) && qFuzzyCompare(vertex[3][1], marker.vertex[3][1]);
 }
 
 qreal Marker::distance() const
 {
-    return gCamera.distance(*this);
+    return sqrt(modelView[12]*modelView[12] + modelView[13]*modelView[13] + modelView[14]*modelView[14]);
 }

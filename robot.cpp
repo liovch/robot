@@ -63,10 +63,8 @@ void Robot::setNoiseSense(qreal noise)
 QList<qreal> Robot::sense() const
 {
     QList<qreal> listDistances;
-    foreach (QObject *obj, gMarkerParams) {
-        MarkerParams *params = qobject_cast<MarkerParams*>(obj);
-        Q_ASSERT(params);
-        qreal distance = qSqrt(qPow((m_position.first - params->position().first), 2) + qPow((m_position.second - params->position().second), 2));
+    foreach (MarkerParams params, gMarkerParams) {
+        qreal distance = qSqrt(qPow((m_position.first - params.x()), 2) + qPow((m_position.second - params.y()), 2) + params.z() * params.z());
         distance += gRandom.gauss(0.0, m_noiseSense);
         listDistances.append(distance);
     }
@@ -98,35 +96,37 @@ qreal Robot::measurementProbability(const QList<Marker> &markers) const
 
     qreal probability = 1.0;
     foreach (Marker m, markers) {
-        MarkerParams params = findMarkerParams(m.id());
+        MarkerParams params = gMarkerParams.value(m.id);
 
         // TODO: Maybe use "false marker probability" instead of 0.0 ?
-        if (!isMarkerVisible(params.position()))
+        if (!isMarkerVisible(params.x(), params.y(), params.z()))
             return 0.0;
 
-        qreal distance = qSqrt(qPow((m_position.first - params.position().first), 2) + qPow((m_position.second - params.position().second), 2));
+        qreal distance = qSqrt(qPow((m_position.first - params.x()), 2) + qPow((m_position.second - params.y()), 2) + params.z() * params.z());
         probability *= gRandom.gaussian(distance, m_noiseSense, m.distance());
     }
 
     return probability;
 }
 
-bool Robot::isMarkerVisible(const QPair<qreal, qreal> &markerPosition) const
+bool Robot::isMarkerVisible(qreal x, qreal y, qreal z) const
 {
-    // Note: There's a problem with qAtan2. It should be declared as qAtan2(y, x)
-    qreal angle = qAtan2(markerPosition.second - m_position.second, markerPosition.first - m_position.first) + 2.0 * M_PI; // TODO: make sure the qAtan2 range is [-pi; pi]
-    angle = fmod(angle, 2.0 * M_PI);
+    // TODO: Check marker visibility
+    Q_UNUSED(x);
+    Q_UNUSED(y);
+    Q_UNUSED(z);
+    return true;
+//    // Note: There's a problem with qAtan2. It should be declared as qAtan2(y, x)
+//    qreal angle = qAtan2(x.second - m_position.second, x.first - m_position.first) + 2.0 * M_PI; // TODO: make sure the qAtan2 range is [-pi; pi]
+//    angle = fmod(angle, 2.0 * M_PI);
 
-    return (qAbs(angle - m_angle) <= gCamera.angleOfView());
+//    return (qAbs(angle - m_angle) <= gCamera.angleOfView());
 }
 
 bool Robot::isEveryMarkerVisible() const
 {
-    foreach (QObject *obj, gMarkerParams) {
-        MarkerParams* params = qobject_cast<MarkerParams*>(obj);
-        Q_ASSERT(params);
-
-        if (!isMarkerVisible(params->position()))
+    foreach (MarkerParams params, gMarkerParams) {
+        if (!isMarkerVisible(params.x(), params.y(), params.z()))
             return false;
     }
 
