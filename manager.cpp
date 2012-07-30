@@ -3,25 +3,13 @@
 #include <QDeclarativeItem>
 #include <QDebug>
 #include "settings.h"
-#ifdef USE_AR_TOOLKIT
 #include "artoolkitimageprocessor.h"
-#else
-#include "thresholdimageprocessor.h"
-#endif
 #ifndef MEEGO_EDITION_HARMATTAN
-#include "particledisplay.h"
-#include "folderimageprovider.h"
+    #include "particledisplay.h"
+    #include "folderimageprovider.h"
 #else
-#ifdef USE_DECLARATIVE_CAMERA
-#include "declarativecameraimageprovider.h"
+    #include "fcamimageprovider.h"
 #endif
-#ifdef USE_QCAMERA
-#include "cameraimageprovider.h"
-#endif
-#ifdef USE_FCAM
-#include "fcamimageprovider.h"
-#endif // USE_FCAM
-#endif // !MEEGO_EDITION_HARMATTAN
 
 Manager::Manager(QObject *parent) :
     QObject(parent),
@@ -45,11 +33,7 @@ bool Manager::init()
     particleViewer.setMainQmlFile(QLatin1String("qml/robot/particleviewer.qml"));
 
     FolderImageProvider *imageProvider = new FolderImageProvider(this);
-#ifdef USE_AR_TOOLKIT
     imageProvider->setDir("../../data/robot/artoolkit", "*.jpg");
-#else
-    imageProvider->setDir("../../data/robot/test", "*.jpg");
-#endif
 
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
@@ -57,42 +41,17 @@ bool Manager::init()
     markerProcessor.setOutputDirectory("../../data/robot/output");
 #else
     m_phoneUI.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
-
-#ifdef USE_DECLARATIVE_CAMERA
-    m_phoneUI.setMainQmlFile("qml/robot/phone.qml");
-
-    DeclarativeCameraImageProvider *imageProvider = new DeclarativeCameraImageProvider(this);
-    QObject *camera = m_phoneUI.rootObject()->findChild<QObject *>(QString("camera"));
-    Q_ASSERT(camera);
-    imageProvider->init(camera);
-#endif
     m_phoneUI.setMainQmlFile("qml/robot/camera.qml");
 
-#ifdef USE_QCAMERA
-    CameraImageProvider *imageProvider = new CameraImageProvider(this);
-    if (!imageProvider->init()) {
-        qDebug() << "Failed to initialize camera";
-        return false;
-    }
-#endif
-
-#ifdef USE_FCAM
     FCamImageProvider *imageProvider = new FCamImageProvider(this);
     if (!imageProvider->init()) {
         qDebug() << "Failed to initialize camera";
         return false;
     }
-#endif
-
 #endif // !MEEGO_EDITION_HARMATTAN
 
     m_imageProvider = imageProvider;
-
-#ifdef USE_AR_TOOLKIT
     m_imageProcessor = new ARToolkitImageProcessor(this);
-#else
-    m_imageProcessor = new ThresholdImageProcessor(this);
-#endif
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
@@ -108,19 +67,6 @@ bool Manager::init()
     QObject::connect(imageViewerQML, SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
     QObject::connect(particleViewer.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
 
-#ifndef USE_AR_TOOLKIT
-    // process image every time a parameter is changed
-    foreach (QObject* obj, gMarkerParams) {
-        MarkerParams *param = qobject_cast<MarkerParams*>(obj);
-        Q_ASSERT(param);
-        QObject::connect(param, SIGNAL(minRChanged()), m_imageProcessor, SLOT(processLastImage()));
-        QObject::connect(param, SIGNAL(minGChanged()), m_imageProcessor, SLOT(processLastImage()));
-        QObject::connect(param, SIGNAL(minBChanged()), m_imageProcessor, SLOT(processLastImage()));
-        QObject::connect(param, SIGNAL(maxRChanged()), m_imageProcessor, SLOT(processLastImage()));
-        QObject::connect(param, SIGNAL(maxGChanged()), m_imageProcessor, SLOT(processLastImage()));
-        QObject::connect(param, SIGNAL(maxBChanged()), m_imageProcessor, SLOT(processLastImage()));
-    }
-#endif
     ParticleDisplay *display = particleViewer.rootObject()->findChild<ParticleDisplay *>(QString("display"));
     Q_ASSERT(display);
     QObject::connect(&particleFilter, SIGNAL(particlesUpdated(QVector<Robot>)), display, SLOT(setParticles(QVector<Robot>)));
