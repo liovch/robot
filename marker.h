@@ -10,7 +10,7 @@ class Marker : public QObject
 public:
     explicit Marker(QObject *parent = 0);
     Marker(const Marker& marker);
-    //bool operator=(const Marker& marker);
+    Marker& operator=(const Marker& marker);
     bool operator==(const Marker& marker);
 
     // computes distance from camera to this marker

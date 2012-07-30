@@ -1,5 +1,6 @@
 #include "marker.h"
 #include "camera.h"
+#include <qmath.h>
 
 Marker::Marker(QObject *parent) :
     QObject(parent),
@@ -10,12 +11,19 @@ Marker::Marker(QObject *parent) :
 Marker::Marker(const Marker &marker):
     QObject(marker.parent())
 {
+    operator =(marker);
+}
+
+Marker& Marker::operator=(const Marker& marker)
+{
     id = marker.id;
     confidence = marker.confidence;
     memcpy(pos, marker.pos, sizeof(pos));
     memcpy(line, marker.line, sizeof(line));
     memcpy(vertex, marker.vertex, sizeof(vertex));
     memcpy(modelView, marker.modelView, sizeof(modelView));
+
+    return *this;
 }
 
 bool Marker::operator==(const Marker& marker)
@@ -31,5 +39,5 @@ bool Marker::operator==(const Marker& marker)
 
 qreal Marker::distance() const
 {
-    return sqrt(modelView[12]*modelView[12] + modelView[13]*modelView[13] + modelView[14]*modelView[14]);
+    return qSqrt(modelView[12]*modelView[12] + modelView[13]*modelView[13] + modelView[14]*modelView[14]);
 }
