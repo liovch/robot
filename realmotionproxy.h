@@ -1,5 +1,5 @@
-#ifndef MOTIONPROXY_H
-#define MOTIONPROXY_H
+#ifndef REALMOTIONPROXY_H
+#define REALMOTIONPROXY_H
 
 #include <QObject>
 #include "movement.h"
@@ -30,11 +30,11 @@ QTM_USE_NAMESPACE
 //    and the current point in the direction of where robot is heading should
 //    be marked as an obstacle (temporary?) on the grid map to prevent motion
 //    planner from using same route the next time.
-class MotionProxy : public QObject
+class RealMotionProxy : public QObject
 {
     Q_OBJECT
 public:
-    explicit MotionProxy(QObject *parent = 0);
+    explicit RealMotionProxy(QObject *parent = 0);
     
 signals:
     // Emited just after robot has finished motionUpdate or failed
@@ -66,4 +66,4 @@ private:
     quint16 m_encoderReadingRight;
 };
 
-#endif // MOTIONPROXY_H
+#endif // REALMOTIONPROXY_H

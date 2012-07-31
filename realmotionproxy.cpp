@@ -1,6 +1,6 @@
-#include "motionproxy.h"
+#include "realmotionproxy.h"
 
-MotionProxy::MotionProxy(QObject *parent) :
+RealMotionProxy::RealMotionProxy(QObject *parent) :
     QObject(parent),
     m_socket(0),
     m_encoderReadingLeft(0),
@@ -14,22 +14,22 @@ MotionProxy::MotionProxy(QObject *parent) :
     m_socket->connectToService(address, QBluetoothUuid::SerialPort);
 }
 
-void MotionProxy::motionUpdate(const Movement &m)
+void RealMotionProxy::motionUpdate(const Movement &m)
 {
     Q_UNUSED(m);
 }
 
-void MotionProxy::connected()
+void RealMotionProxy::connected()
 {
     qDebug() << "Bluetooth Connected!";
 }
 
-void MotionProxy::error(QBluetoothSocket::SocketError error)
+void RealMotionProxy::error(QBluetoothSocket::SocketError error)
 {
     qDebug() << "Bluetooth Error:" << error;
 }
 
-void MotionProxy::bluetoothDataReceived()
+void RealMotionProxy::bluetoothDataReceived()
 {
     if (m_socket->bytesAvailable() < 4)
         return;

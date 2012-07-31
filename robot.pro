@@ -44,8 +44,8 @@ SOURCES += main.cpp \
     imageprocessor.cpp \
     artoolkitimageprocessor.cpp \
     motionplanner.cpp \
-    motionproxy.cpp \
-    vector2d.cpp
+    vector2d.cpp \
+    realmotionproxy.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES += fcamimageprovider.cpp
 }
@@ -82,8 +82,8 @@ HEADERS += \
     imageprocessor.h \
     artoolkitimageprocessor.h \
     motionplanner.h \
-    motionproxy.h \
-    vector2d.h
+    vector2d.h \
+    realmotionproxy.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS += fcamimageprovider.h
 }

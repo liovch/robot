@@ -9,7 +9,7 @@
 #include "particlefilter.h"
 #include "qmlapplicationviewer.h"
 #include "markerprocessor.h"
-#include "motionproxy.h"
+#include "realmotionproxy.h"
 
 class Manager : public QObject
 {
@@ -32,7 +32,7 @@ private:
     QmlApplicationViewer m_phoneUI;
 #endif
 
-    MotionProxy m_motionProxy;
+    RealMotionProxy m_motionProxy;
     MotionPlanner m_motionPlanner;
     ImageProvider *m_imageProvider;
     ImageProcessor *m_imageProcessor;
