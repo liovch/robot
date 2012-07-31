@@ -29,8 +29,6 @@ bool Manager::init()
     particleViewer.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
 
     initMarkerParams();
-    // TODO: Need new image viewer?
-//    imageViewer.rootContext()->setContextProperty("markerParamsModel", QVariant::fromValue(gMarkerParams));
     imageViewer.setMainQmlFile(QLatin1String("qml/robot/imageviewer.qml"));
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
@@ -61,12 +59,12 @@ bool Manager::init()
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
-    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), m_motionProxy, SLOT(motionUpdate(Movement)));
-    QObject::connect(m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
-    // TODO: Connect failedMotionUpdate signal to motion planner
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
     QObject::connect(&particleFilter, SIGNAL(estimatedPosition(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
+    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), m_motionProxy, SLOT(motionUpdate(Movement)));
+    QObject::connect(m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
+    // TODO: Connect failedMotionUpdate signal to motion planner
 
     // TODO: MarkerProcessor is only used to print markers for debugging
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
