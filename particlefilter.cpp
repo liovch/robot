@@ -60,4 +60,29 @@ void ParticleFilter::resample(const QList<Marker> &markers)
 
     m_particles = QVector<Robot>::fromList(resampled);
     emit particlesUpdated(m_particles);
+    emit estimatedPosition(calculatePosition());
+}
+
+Robot ParticleFilter::calculatePosition() const
+{
+    // TODO: Should I take particle probability into account?
+    qreal x = 0.0, y = 0.0, angle = 0.0;
+    if (m_particles.size() > 0) {
+        // orientation is tricky because it is cyclic. By normalizing
+        // around the first particle we are somewhat more robust to
+        // the 0=2pi problem
+        qreal firstAngle = m_particles[0].angle();
+        foreach (const Robot &r, m_particles) {
+            x += r.position().first;
+            y += r.position().second;
+            angle += fmod(r.angle() - firstAngle + M_PI, 2.0 * M_PI) + (firstAngle - M_PI);
+        }
+        x /= m_particles.size();
+        y /= m_particles.size();
+        angle /= m_particles.size();
+    }
+    Robot r;
+    r.setPosition(QPair<qreal, qreal>(x, y));
+    r.setAngle(angle);
+    return r;
 }

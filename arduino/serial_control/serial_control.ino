@@ -41,10 +41,11 @@ void turn_R (char a,char b)             //Turn Right
 //Wheel Encoders
 int WheelEncoderLeft = 2;
 int WheelEncoderRight = 3;
-volatile int _encoder_step_left=0;
-volatile int _encoder_step_right=0;
-volatile int _old_state_right = 0;
-volatile int _old_state_left = 0;
+volatile unsigned int _encoder_step_left = 0;
+volatile unsigned int _encoder_step_right = 0;
+volatile unsigned int _old_state_right = 0;
+volatile unsigned int _old_state_left = 0;
+volatile boolean isUpdateRequired = true;
 
 void reinit_encoders()
 {
@@ -58,19 +59,17 @@ void read_encoders()
     if(get_encoder_step(WheelEncoderRight, _old_state_right))
     {
       _encoder_step_right++;
-      Serial.print("Right:");
-      Serial.println(_encoder_step_right);
+      isUpdateRequired = true;
     }
     
     if(get_encoder_step(WheelEncoderLeft, _old_state_left))
     {
       _encoder_step_left++;
-      Serial.print("Left:");
-      Serial.println(_encoder_step_left);
+      isUpdateRequired = true;
     }
 }
 
-boolean get_encoder_step(const int iEnc, volatile int &old_dr)
+boolean get_encoder_step(const int iEnc, volatile unsigned int &old_dr)
 {
   int dr=digitalRead(iEnc);
   if(dr!=old_dr)
@@ -92,14 +91,25 @@ void setup(void)
   attachInterrupt(1, read_encoders, CHANGE);
 
   int i;
-  for(i=4;i<=7;i++)
+  for (i=4; i<=7; i++)
     pinMode(i, OUTPUT);
-  Serial.begin(19200);      //Set Baud Rate
-  Serial.println("Run keyboard control");
+  Serial.begin(9600);      //Set Baud Rate
+}
+
+void writeInt(unsigned int value)
+{
+  Serial.write(value & 0xFF);
+  Serial.write(value >> 8);
 }
 
 void loop(void) 
 {
+  if (isUpdateRequired) {
+	isUpdateRequired = false; // TODO: Not sure how to achieve thread safeness here
+        writeInt(_encoder_step_left);
+        writeInt(_encoder_step_right);
+  }
+
   if (Serial.available()) {
     char val = Serial.read();
     if(val != -1)

@@ -5,10 +5,11 @@
 #include "qplatformdefs.h"
 #include "imageprovider.h"
 #include "imageprocessor.h"
-#include "movementprovider.h"
+#include "motionplanner.h"
 #include "particlefilter.h"
 #include "qmlapplicationviewer.h"
 #include "markerprocessor.h"
+#include "motionproxy.h"
 
 class Manager : public QObject
 {
@@ -31,7 +32,8 @@ private:
     QmlApplicationViewer m_phoneUI;
 #endif
 
-    MovementProvider movementProvider;
+    MotionProxy m_motionProxy;
+    MotionPlanner m_motionPlanner;
     ImageProvider *m_imageProvider;
     ImageProcessor *m_imageProcessor;
     ParticleFilter particleFilter;
