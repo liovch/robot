@@ -3,7 +3,7 @@ import QtQuick 1.1
 //import Robot 1.0
 
 Rectangle {
-    width: 1200
+    width: 610
     height: 355
 
     Item {

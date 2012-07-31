@@ -5,7 +5,8 @@
 #include "camera.h"
 
 FolderImageProvider::FolderImageProvider(QObject *parent) :
-    ImageProvider(parent)
+    ImageProvider(parent),
+    m_display(0)
 {
 }
 
@@ -30,6 +31,10 @@ void FolderImageProvider::requestNextImage()
         image = image.scaledToHeight(newHeight, Qt::SmoothTransformation);
     }
 
-    if (!image.isNull())
+    if (!image.isNull()) {
+        if (m_display)
+            m_display->setProperty("source", file.absoluteFilePath());
+
         emit nextImage(image);
+    }
 }

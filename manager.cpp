@@ -32,15 +32,15 @@ bool Manager::init()
     // TODO: Need new image viewer?
 //    imageViewer.rootContext()->setContextProperty("markerParamsModel", QVariant::fromValue(gMarkerParams));
     imageViewer.setMainQmlFile(QLatin1String("qml/robot/imageviewer.qml"));
+    QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
+    Q_ASSERT(imageViewerQML);
 
     qmlRegisterType<ParticleDisplay>("Robot", 1, 0, "ParticleDisplay");
     particleViewer.setMainQmlFile(QLatin1String("qml/robot/particleviewer.qml"));
 
     FolderImageProvider *imageProvider = new FolderImageProvider(this);
     imageProvider->setDir("../../data/robot/artoolkit", "*.jpg");
-
-    QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
-    Q_ASSERT(imageViewerQML);
+    imageProvider->setImageDisplay(imageViewerQML);
 
     m_motionProxy = new FakeMotionProxy(this);
 #else
