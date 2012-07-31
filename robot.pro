@@ -45,12 +45,14 @@ SOURCES += main.cpp \
     artoolkitimageprocessor.cpp \
     motionplanner.cpp \
     vector2d.cpp \
-    realmotionproxy.cpp
+    motionproxy.cpp
 contains(MEEGO_EDITION,harmattan) {
-    SOURCES += fcamimageprovider.cpp
+    SOURCES += fcamimageprovider.cpp \
+               realmotionproxy.cpp
 }
 !contains(MEEGO_EDITION,harmattan) {
-    SOURCES += folderimageprovider.cpp
+    SOURCES += folderimageprovider.cpp \
+               fakemotionproxy.cpp
 }
 
 # Please do not modify the following two lines. Required for deployment.
@@ -83,12 +85,14 @@ HEADERS += \
     artoolkitimageprocessor.h \
     motionplanner.h \
     vector2d.h \
-    realmotionproxy.h
+    motionproxy.h
 contains(MEEGO_EDITION,harmattan) {
-    HEADERS += fcamimageprovider.h
+    HEADERS += fcamimageprovider.h \
+               realmotionproxy.h
 }
 !contains(MEEGO_EDITION,harmattan) {
-    HEADERS += folderimageprovider.h
+    HEADERS += folderimageprovider.h \
+               fakemotionproxy.h
 }
 
 contains(MEEGO_EDITION,harmattan) {

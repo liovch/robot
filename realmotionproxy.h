@@ -2,7 +2,7 @@
 #define REALMOTIONPROXY_H
 
 #include <QObject>
-#include "movement.h"
+#include "motionproxy.h"
 
 #include <QtMobility/qmobilityglobal.h>
 #include <qbluetoothsocket.h>
@@ -30,29 +30,18 @@ QTM_USE_NAMESPACE
 //    and the current point in the direction of where robot is heading should
 //    be marked as an obstacle (temporary?) on the grid map to prevent motion
 //    planner from using same route the next time.
-class RealMotionProxy : public QObject
+class RealMotionProxy : public MotionProxy
 {
     Q_OBJECT
 public:
     explicit RealMotionProxy(QObject *parent = 0);
     
-signals:
-    // Emited just after robot has finished motionUpdate or failed
-    // to perform motion update.
-    // Parameter indicates the actual movement robot has performed.
-    void finishedMotionUpdate(const Movement& m);
-
-    // Emited when robot was unable to perform the requested motionUpdate.
-    // This signal is emited when there was no feedback from robot's
-    // wheel encoders for a long time. This should indicate that robot is stuck.
-    // finishedMotionUpdate is still emited in this case.
-    void failedMotionUpdate();
-    
-public slots:
+    // slots
     // Request motion update to perform on the robot.
     // This is connected to motion planner.
     void motionUpdate(const Movement& m);
 
+public slots:
     // bluetooth signals
     void connected();
     void error(QBluetoothSocket::SocketError error);

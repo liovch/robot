@@ -7,12 +7,15 @@
 #ifndef MEEGO_EDITION_HARMATTAN
     #include "particledisplay.h"
     #include "folderimageprovider.h"
+    #include "fakemotionproxy.h"
 #else
     #include "fcamimageprovider.h"
+    #include "realmotionproxy.h"
 #endif
 
 Manager::Manager(QObject *parent) :
     QObject(parent),
+    m_motionProxy(0),
     m_imageProvider(0),
     m_imageProcessor(0),
     m_movementRequest(false)
@@ -38,6 +41,8 @@ bool Manager::init()
 
     QObject *imageViewerQML = imageViewer.rootObject()->findChild<QObject *>("image");
     Q_ASSERT(imageViewerQML);
+
+    m_motionProxy = new FakeMotionProxy(this);
 #else
     m_phoneUI.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     m_phoneUI.setMainQmlFile("qml/robot/camera.qml");
@@ -47,6 +52,8 @@ bool Manager::init()
         qDebug() << "Failed to initialize camera";
         return false;
     }
+
+    m_motionProxy = new RealMotionProxy(this);
 #endif // !MEEGO_EDITION_HARMATTAN
 
     m_imageProvider = imageProvider;
@@ -54,8 +61,8 @@ bool Manager::init()
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
 
-    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), &m_motionProxy, SLOT(motionUpdate(Movement)));
-    QObject::connect(&m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
+    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), m_motionProxy, SLOT(motionUpdate(Movement)));
+    QObject::connect(m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
     // TODO: Connect failedMotionUpdate signal to motion planner
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));

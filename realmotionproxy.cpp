@@ -1,7 +1,7 @@
 #include "realmotionproxy.h"
 
 RealMotionProxy::RealMotionProxy(QObject *parent) :
-    QObject(parent),
+    MotionProxy(parent),
     m_socket(0),
     m_encoderReadingLeft(0),
     m_encoderReadingRight(0)
