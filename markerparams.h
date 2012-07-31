@@ -17,7 +17,7 @@ public:
     void setId(int id) { m_id = id; }
     void setPosition(qreal x, qreal y, qreal z) { m_x = x; m_y = y; m_z = z; }
 
-    static qreal size(); // returns the size of a square marker in mm
+    static qreal size(); // returns the size of a square marker in m
 
     int id() const { return m_id; }
     qreal x() const { return m_x; }

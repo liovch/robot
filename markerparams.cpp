@@ -1,6 +1,6 @@
 #include "markerparams.h"
 
-#define MARKER_SIZE 150.0f // mm
+#define MARKER_SIZE 0.15f // m
 
 MarkerParams::MarkerParams(QObject *parent) :
     QObject(parent),
@@ -44,15 +44,11 @@ void initMarkerParams()
     // TODO: Set proper marker params
     MarkerParams params;
 
-    params.setId(0);
-    params.setPosition(0.0, 0.0, 2200.0);
+    params.setId(7);
+    params.setPosition(0.0, 0.0, 2.2);
     gMarkerParams.insert(params.id(), params);
 
-    params.setId(1);
-    params.setPosition(500.0, 500.0, 2200.0);
-    gMarkerParams.insert(params.id(), params);
-
-    params.setId(2);
-    params.setPosition(3000.0, 2000.0, 2200.0);
+    params.setId(8);
+    params.setPosition(0.5, 0.5, 2.2);
     gMarkerParams.insert(params.id(), params);
 }

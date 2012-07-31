@@ -84,7 +84,7 @@ bool ARToolkitImageProcessor::initialize(const QImage& image)
     m_tracker->setPatternWidth(MarkerParams::size());
 
     // the marker in the BCH test image has a thin border...
-    m_tracker->setBorderWidth(useBCH ? 0.125f : 0.250f);
+    m_tracker->setBorderWidth(useBCH ? 0.125f : 0.250f); // TODO: Check if border size is correct
 
     // set a threshold. alternatively we could also activate automatic thresholding
     //m_tracker->setThreshold(150);
