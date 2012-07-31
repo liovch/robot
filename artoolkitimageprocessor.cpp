@@ -159,7 +159,8 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
         markers.append(m);
     }
 
-    m_previousMarkers = markers;
+    if (!markers.isEmpty())
+        m_previousMarkers = markers;
 
     if (!isValidMarker)
         qDebug() << "No markers found: reported duplicate markers";
