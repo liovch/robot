@@ -65,12 +65,11 @@ bool Manager::init()
     QObject::connect(m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
     // TODO: Connect failedMotionUpdate signal to motion planner
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
-    QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
+    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
     QObject::connect(&particleFilter, SIGNAL(estimatedPosition(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
 
     // TODO: MarkerProcessor is only used to print markers for debugging
-    QObject::connect(m_imageProcessor, SIGNAL(newMarkers(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
-    QObject::connect(m_imageProcessor, SIGNAL(newMarkerMap(QVector<MarkerParams::MarkerId>,int,int)), &markerProcessor, SLOT(processMarkerMap(QVector<MarkerParams::MarkerId>,int,int)));
+    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
 
 #ifndef MEEGO_EDITION_HARMATTAN
     // connect QML components

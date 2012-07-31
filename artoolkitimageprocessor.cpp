@@ -70,7 +70,7 @@ bool ARToolkitImageProcessor::initialize(const QImage& image)
     //  - Std. ARToolKit
     //  - MATLAB Camera Calibration Toolbox
 #ifndef MEEGO_EDITION_HARMATTAN
-    if(!m_tracker->init("/home/lev/code/robot/data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
+    if(!m_tracker->init("../robot/data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
 #else
     if(!m_tracker->init("/home/developer/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
 #endif
