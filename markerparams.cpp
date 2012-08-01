@@ -45,10 +45,10 @@ void initMarkerParams()
     MarkerParams params;
 
     params.setId(7);
-    params.setPosition(0.0, 0.0, 2.2);
+    params.setPosition(0.0, 0.5, 2.2);
     gMarkerParams.insert(params.id(), params);
 
     params.setId(8);
-    params.setPosition(0.5, 0.5, 2.2);
+    params.setPosition(0.0, 0.8, 2.2);
     gMarkerParams.insert(params.id(), params);
 }

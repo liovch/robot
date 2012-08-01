@@ -1,5 +1,6 @@
 #include "motionplanner.h"
 #include <qmath.h>
+#include <QDateTime>
 
 #define GRID_SCALE 0.1 // each cell is 0.1m long
 
@@ -40,8 +41,8 @@ void MotionPlanner::requestNextUpdate(const Robot &robot)
     // Initial number of moves required to reach each position is set to infinity
     m_map.fill(INT_MAX);
     // Set the number of moves required to reach current position to 0.
-    int rx = (int)(robot.position().first + 0.5);
-    int ry = (int)(robot.position().second + 0.5);
+    int rx = (int)(robot.position().first / GRID_SCALE + 0.5);
+    int ry = (int)(robot.position().second / GRID_SCALE + 0.5);
     if (search(rx, ry, 0)) {
         // Backtrack from the goal position to the starting position to calculate
         // the next movement update.
@@ -72,25 +73,38 @@ bool MotionPlanner::search(int x, int y, int cost)
         return true;
     }
 
-    if (m_grid.pixel(x, y) > 0) {
+    if (qGray(m_grid.pixel(x, y)) > 0) {
         return false;
     }
 
     m_map.setPoint(x, y, cost);
 
-    bool bSuccess = false;
     foreach (QIntPair delta, m_deltas) {
         if (search(x + delta.first, y + delta.second, cost + 1))
-            bSuccess = true;
+            return true;
     }
 
-    return bSuccess;
+    return false;
 }
 
 QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
 {
-    int rx = (int)(robot.position().first + 0.5);
-    int ry = (int)(robot.position().second + 0.5);
+    int rx = (int)(robot.position().first / GRID_SCALE + 0.5);
+    int ry = (int)(robot.position().second / GRID_SCALE + 0.5);
+
+#ifndef MEEGO_EDITION_HARMATTAN
+    QImage pathImage(m_grid.width(), m_grid.height(), QImage::Format_RGB888);
+    for (int y = 0; y < m_map.height(); y++) {
+        for (int x = 0; x < m_map.width(); x++) {
+            if (m_map.point(x, y) < INT_MAX) {
+                int value = qMin(m_map.point(x, y), 255);
+                pathImage.setPixel(x, y, qRgb(value, 0, 0));
+            } else {
+                pathImage.setPixel(x, y, m_grid.pixel(x, y));
+            }
+        }
+    }
+#endif
 
     QList<QIntPair> path;
     int x = m_goalX, y = m_goalY;
@@ -110,9 +124,16 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
         }
         x += bestDelta.first;
         y += bestDelta.second;
+#ifndef MEEGO_EDITION_HARMATTAN
+        pathImage.setPixel(x, y, qRgb(0, 255, 0));
+#endif
         path.push_front(bestDelta);
     }
 
+#ifndef MEEGO_EDITION_HARMATTAN
+    QString filePath = "../../data/robot/path/" + QDateTime::currentDateTime().toString("yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
+    pathImage.save(filePath);
+#endif
     return path;
 }
 

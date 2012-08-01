@@ -38,8 +38,6 @@ private:
     ImageProcessor *m_imageProcessor;
     ParticleFilter particleFilter;
     MarkerProcessor markerProcessor;
-
-    bool m_movementRequest; // used to alternate between movement and measurement updates
 };
 
 #endif // MANAGER_H

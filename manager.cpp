@@ -17,8 +17,7 @@ Manager::Manager(QObject *parent) :
     QObject(parent),
     m_motionProxy(0),
     m_imageProvider(0),
-    m_imageProcessor(0),
-    m_movementRequest(false)
+    m_imageProcessor(0)
 {
 }
 
@@ -58,6 +57,10 @@ bool Manager::init()
     m_imageProcessor = new ARToolkitImageProcessor(this);
 
     particleFilter.init(NUM_PARTICLES, MAX_POSITION);
+    if (!m_motionPlanner.loadGridMap("../robot/data/grid.png")) {
+        qDebug() << "Failed to load motion planner map.";
+    }
+    m_motionPlanner.setGoal(100, 50);
 
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
@@ -79,7 +82,7 @@ bool Manager::init()
     Q_ASSERT(display);
     QObject::connect(&particleFilter, SIGNAL(particlesUpdated(QVector<Robot>)), display, SLOT(setParticles(QVector<Robot>)));
 
-    mouseClicked(); // request first data to show something on the screen at startup
+    m_imageProvider->requestNextImage(); // request first data to show something on the screen at startup
 
     imageViewer.showExpanded();
     particleViewer.showExpanded();
@@ -91,7 +94,7 @@ bool Manager::init()
     particleViewer.setGeometry(300, 15, geometry.width(), geometry.height());
 #else
     QObject::connect(m_phoneUI.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
-    mouseClicked(); // request first image from camera to start the cycle
+    m_imageProvider->requestNextImage(); // request first data to show something on the screen at startup
     m_phoneUI.showExpanded();
 #endif
     return true;
@@ -99,11 +102,5 @@ bool Manager::init()
 
 void Manager::mouseClicked()
 {
-    if (m_movementRequest) {
-        m_motionPlanner.requestNextUpdate(particleFilter.calculatePosition());
-    } else {
-        m_imageProvider->requestNextImage();
-    }
-
-    m_movementRequest = !m_movementRequest;
+    // TODO: Probably remove this
 }

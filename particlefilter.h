@@ -14,7 +14,6 @@ public:
     void init(size_t N, qreal maxPosition);
 
     QVector<Robot> particles() const { return m_particles; }
-    Robot calculatePosition() const;
 
 signals:
     // Note: This is emited every time particles changed
@@ -29,6 +28,7 @@ public slots:
 
 private:
     QVector<Robot> m_particles;
+    Robot m_bestParticle;
 };
 
 #endif // PARTICLEFILTER_H
