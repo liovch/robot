@@ -133,6 +133,7 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
 #ifndef MEEGO_EDITION_HARMATTAN
     QString filePath = "../../data/robot/path/" + QDateTime::currentDateTime().toString("yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
     pathImage.save(filePath);
+    qDebug() << "Saved motion plan image to:" << filePath;
 #endif
     return path;
 }
