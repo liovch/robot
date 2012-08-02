@@ -41,8 +41,10 @@ void ParticleFilter::resample(const QList<Marker> &markers)
     qreal maxWeight = 0.0;
     for (size_t n = 0; n < N; n++) {
         weights[n] = m_particles[n].measurementProbability(markers);
-        if (weights[n] > maxWeight)
+        if (weights[n] > maxWeight) {
             maxWeight = weights[n];
+            m_bestParticle = m_particles[n];
+        }
     }
 
     // Resampling wheel
@@ -60,4 +62,6 @@ void ParticleFilter::resample(const QList<Marker> &markers)
 
     m_particles = QVector<Robot>::fromList(resampled);
     emit particlesUpdated(m_particles);
+    qDebug() << "Estimated position:" << m_bestParticle.position();
+    emit estimatedPosition(m_bestParticle); // TODO: Emit this before resampling wheel?
 }

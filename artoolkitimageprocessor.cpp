@@ -70,7 +70,7 @@ bool ARToolkitImageProcessor::initialize(const QImage& image)
     //  - Std. ARToolKit
     //  - MATLAB Camera Calibration Toolbox
 #ifndef MEEGO_EDITION_HARMATTAN
-    if(!m_tracker->init("/home/lev/code/robot/data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
+    if(!m_tracker->init("../robot/data/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
 #else
     if(!m_tracker->init("/home/developer/artoolkit/N9_3mpix.cal", 1.0f, 1000.0f)) {
 #endif
@@ -84,7 +84,7 @@ bool ARToolkitImageProcessor::initialize(const QImage& image)
     m_tracker->setPatternWidth(MarkerParams::size());
 
     // the marker in the BCH test image has a thin border...
-    m_tracker->setBorderWidth(useBCH ? 0.125f : 0.250f);
+    m_tracker->setBorderWidth(useBCH ? 0.125f : 0.250f); // TODO: Check if border size is correct
 
     // set a threshold. alternatively we could also activate automatic thresholding
     //m_tracker->setThreshold(150);
@@ -159,7 +159,8 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
         markers.append(m);
     }
 
-    m_previousMarkers = markers;
+    if (!markers.isEmpty())
+        m_previousMarkers = markers;
 
     if (!isValidMarker)
         qDebug() << "No markers found: reported duplicate markers";
