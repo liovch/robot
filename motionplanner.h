@@ -29,7 +29,8 @@ public slots:
     void requestNextUpdate(const Robot& robot); // estimated position of the robot
 
 private:
-    bool search(int x, int y, int cost);
+    //bool search(int x, int y, int cost);
+    bool expand(int x, int y, int cost);
     // builds path from goal position to the robot position specified as
     // a parameter
     QList<QIntPair> buildPath(const Robot& robot);
