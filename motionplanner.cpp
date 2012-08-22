@@ -133,6 +133,9 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
 #ifndef MEEGO_EDITION_HARMATTAN
         pathImage.setPixel(x, y, qRgb(0, 255, 0));
 #endif
+        // Inverse path, because we're moving backwards from goal point
+        bestDelta.first = -bestDelta.first;
+        bestDelta.second = -bestDelta.second;
         path.push_front(bestDelta);
     }
 
@@ -162,8 +165,15 @@ Movement MotionPlanner::calculateMotionUpdate(const Robot &robot, const QList<QI
     // Now we have the direction and the total distance robot has to travel this time.
 
     // Note: There's a problem with qAtan2. It should be declared as qAtan2(y, x)
+    qDebug() << "Up: " << qAtan2(-1.0, 0.0) * 180.0 / M_PI;
+
     qreal targetAngle = qAtan2(direction.second, direction.first);
     m.setTurn(targetAngle - robot.angle());
     m.setForward(distance * GRID_SCALE);
+
+    qDebug() << "Direction:" << targetAngle * 180.0 / M_PI << "Distance:" << distance;
+    qDebug() << "Current Robot:" << robot.angle() * 180.0 / M_PI << robot.position();
+    qDebug() << "Motion Update:" << m.turn() * 180.0 / M_PI << "turn" << m.forward() << "forward";
+
     return m;
 }

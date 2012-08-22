@@ -7,5 +7,5 @@ FakeMotionProxy::FakeMotionProxy(QObject *parent) :
 
 void FakeMotionProxy::motionUpdate(const Movement &m)
 {
-    Q_UNUSED(m);
+    emit finishedMotionUpdate(m);
 }

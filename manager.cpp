@@ -103,4 +103,5 @@ bool Manager::init()
 void Manager::mouseClicked()
 {
     // TODO: Probably remove this
+    m_imageProvider->requestNextImage();
 }
