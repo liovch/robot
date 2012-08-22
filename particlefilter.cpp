@@ -8,12 +8,12 @@ ParticleFilter::ParticleFilter(QObject *parent) :
 {
 }
 
-void ParticleFilter::init(size_t N, qreal maxPosition)
+void ParticleFilter::init(size_t N, qreal maxPositionX, qreal maxPositionY)
 {
     m_particles.resize(N);
     for (int n = 0; n < m_particles.size(); n++) {
         do {
-            m_particles[n].random(maxPosition);
+            m_particles[n].random(maxPositionX, maxPositionY);
         } while (!m_particles[n].isEveryMarkerVisible());
 
         // TODO: Maybe noise could be global parameter

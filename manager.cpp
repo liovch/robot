@@ -56,8 +56,8 @@ bool Manager::init()
     m_imageProvider = imageProvider;
     m_imageProcessor = new ARToolkitImageProcessor(this);
 
-    particleFilter.init(NUM_PARTICLES, MAX_POSITION);
-    if (!m_motionPlanner.loadGridMap("../robot/data/grid.png")) {
+    particleFilter.init(NUM_PARTICLES, GRID_MAP_WIDTH, GRID_MAP_HEIGHT);
+    if (!m_motionPlanner.loadGridMap(GRID_MAP_PATH)) {
         qDebug() << "Failed to load motion planner map.";
     }
     m_motionPlanner.setGoal(100, 50);
@@ -91,7 +91,7 @@ bool Manager::init()
     QRect geometry = imageViewer.geometry();
     imageViewer.setGeometry(300, 600, geometry.width(), geometry.height());
     geometry = particleViewer.geometry();
-    particleViewer.setGeometry(300, 15, geometry.width(), geometry.height());
+    particleViewer.setGeometry(300, 15, GRID_MAP_WIDTH * 10.0 * 5.0, GRID_MAP_HEIGHT * 10.0 * 5.0);
 #else
     QObject::connect(m_phoneUI.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
     m_imageProvider->requestNextImage(); // request first data to show something on the screen at startup

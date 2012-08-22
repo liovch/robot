@@ -11,7 +11,7 @@ class ParticleFilter : public QObject
 public:
     explicit ParticleFilter(QObject *parent = 0);
     
-    void init(size_t N, qreal maxPosition);
+    void init(size_t N, qreal maxPositionX, qreal maxPositionY);
 
     QVector<Robot> particles() const { return m_particles; }
 

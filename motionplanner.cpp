@@ -36,13 +36,13 @@ void MotionPlanner::setGoal(int x, int y)
 
 void MotionPlanner::requestNextUpdate(const Robot &robot)
 {
-    Q_UNUSED(robot);
     // Search for the best path and calculate the next required motion update.
     // Initial number of moves required to reach each position is set to infinity
     m_map.fill(INT_MAX);
     // Set the number of moves required to reach current position to 0.
     int rx = (int)(robot.position().first / GRID_SCALE + 0.5);
     int ry = (int)(robot.position().second / GRID_SCALE + 0.5);
+    qDebug() << "Looking for path from" << rx << ry << "to" << m_goalX << m_goalY;
     m_map.setPoint(rx, ry, 0);
 
     bool isUpdated;
@@ -58,9 +58,10 @@ void MotionPlanner::requestNextUpdate(const Robot &robot)
                 }
             }
         }
-    } while (!isUpdated);
+    } while (isUpdated);
 
     if (m_map.point(m_goalX, m_goalY) < INT_MAX) {
+        qDebug() << "Reached goal in" << m_map.point(m_goalX, m_goalY) << "steps";
         // Backtrack from the goal position to the starting position to calculate
         // the next movement update.
         QList<QIntPair> path = buildPath(robot);
@@ -165,8 +166,6 @@ Movement MotionPlanner::calculateMotionUpdate(const Robot &robot, const QList<QI
     // Now we have the direction and the total distance robot has to travel this time.
 
     // Note: There's a problem with qAtan2. It should be declared as qAtan2(y, x)
-    qDebug() << "Up: " << qAtan2(-1.0, 0.0) * 180.0 / M_PI;
-
     qreal targetAngle = qAtan2(direction.second, direction.first);
     m.setTurn(targetAngle - robot.angle());
     m.setForward(distance * GRID_SCALE);

@@ -24,10 +24,10 @@ Robot::Robot(const Robot &robot) :
 {
 }
 
-void Robot::random(qreal maxPosition)
+void Robot::random(qreal maxPositionX, qreal maxPositionY)
 {
-    m_position.first = gRandom.random() * maxPosition;
-    m_position.second = gRandom.random() * maxPosition;
+    m_position.first = gRandom.random() * maxPositionX;
+    m_position.second = gRandom.random() * maxPositionY;
     m_angle = gRandom.random() * 2.0 * M_PI;
 
     m_noiseTurn = 0.0;
