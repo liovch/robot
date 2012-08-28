@@ -12,4 +12,9 @@
 #define GRID_MAP_HEIGHT 10.0
 #define GRID_MAP_PATH "../robot/data/grid.png"
 
+// TODO: Check these
+#define ENCODER_WHEEL_READINGS_PER_CYCLE 20
+#define WHEEL_DIAMETER 0.065
+#define ROBOT_PLATFORM_RADIUS 0.085
+
 #endif // SETTINGS_H

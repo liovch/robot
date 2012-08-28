@@ -48,11 +48,25 @@ public slots:
     void bluetoothDataReceived();
 
 private:
+    static qreal calculateEncoderReadingTurn(qreal angle);
+    static qreal calculateEncoderReadingForward(qreal forward);
+
     QBluetoothSocket *m_socket;
 
     // Data from wheel encoders.
     quint16 m_encoderReadingLeft;
     quint16 m_encoderReadingRight;
+
+    quint16 m_targetReadingLeft;
+    quint16 m_targetReadingRight;
+
+    qreal m_queuedForwardMovement;
+
+    enum Status { MotionStatusStopped, MotionStatusTurning, MotionStatusMovingForward } m_status;
+
+private slots:
+    void moveForward();
+    void stop();
 };
 
 #endif // REALMOTIONPROXY_H

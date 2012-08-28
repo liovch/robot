@@ -141,8 +141,8 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
     }
 
 #ifndef MEEGO_EDITION_HARMATTAN
-    pathImage.setPixel(rx, ry, qRgb(0, 255, 255));
-    pathImage.setPixel(m_goalX, m_goalY, qRgb(255, 127, 0));
+    pathImage.setPixel(rx, ry, qRgb(0, 255, 255)); // initial position
+    pathImage.setPixel(m_goalX, m_goalY, qRgb(255, 127, 0)); // destination
     QString filePath = "../../data/robot/path/" + QDateTime::currentDateTime().toString("yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
     pathImage.save(filePath);
 #endif

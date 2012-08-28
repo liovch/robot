@@ -16,14 +16,16 @@ Movement::Movement(const Movement &m):
 }
 
 Movement::Movement(qreal turn, qreal forward) :
-    m_turn(turn),
     m_forward(forward)
 {
+    setTurn(turn);
 }
 
 void Movement::setTurn(qreal turn)
 {
     m_turn = fmod(turn, 2.0 * M_PI);
+    if (m_turn < 0.0)
+        m_turn += 2.0 * M_PI;
 }
 
 Movement &Movement::operator =(const Movement &m)
