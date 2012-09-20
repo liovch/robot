@@ -17,7 +17,7 @@ public:
     Robot(const Robot& robot);
 
     // initialize random robot position and angle
-    void random(qreal maxPosition);
+    void random(qreal maxPositionX, qreal maxPositionY);
 
     QPair<qreal, qreal> position() const { return m_position; }
     qreal angle() const { return m_angle; }

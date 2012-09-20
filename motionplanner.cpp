@@ -9,13 +9,13 @@ MotionPlanner::MotionPlanner(QObject *parent) :
     m_goalX(0),
     m_goalY(0)
 {
-    m_deltas << QPair<int, int>(-1, -1)
-             << QPair<int, int>(0, -1)
-             << QPair<int, int>(1, -1)
+    m_deltas << QPair<int, int>(0, -1)
              << QPair<int, int>(-1, 0)
              << QPair<int, int>(1, 0)
-             << QPair<int, int>(-1, 1)
              << QPair<int, int>(0, 1)
+             << QPair<int, int>(-1, -1)
+             << QPair<int, int>(1, -1)
+             << QPair<int, int>(-1, 1)
              << QPair<int, int>(1, 1);
 }
 
@@ -36,14 +36,32 @@ void MotionPlanner::setGoal(int x, int y)
 
 void MotionPlanner::requestNextUpdate(const Robot &robot)
 {
-    Q_UNUSED(robot);
     // Search for the best path and calculate the next required motion update.
     // Initial number of moves required to reach each position is set to infinity
     m_map.fill(INT_MAX);
     // Set the number of moves required to reach current position to 0.
     int rx = (int)(robot.position().first / GRID_SCALE + 0.5);
     int ry = (int)(robot.position().second / GRID_SCALE + 0.5);
-    if (search(rx, ry, 0)) {
+    qDebug() << "Looking for path from" << rx << ry << "to" << m_goalX << m_goalY;
+    m_map.setPoint(rx, ry, 0);
+
+    bool isUpdated;
+    do {
+        isUpdated = false;
+
+        for (int y = 0; y < m_map.height(); y++) {
+            for (int x = 0; x < m_map.width(); x++) {
+                int value = m_map.point(x, y);
+                if (value < INT_MAX) {
+                    if (expand(x, y, value))
+                        isUpdated = true;
+                }
+            }
+        }
+    } while (isUpdated);
+
+    if (m_map.point(m_goalX, m_goalY) < INT_MAX) {
+        qDebug() << "Reached goal in" << m_map.point(m_goalX, m_goalY) << "steps";
         // Backtrack from the goal position to the starting position to calculate
         // the next movement update.
         QList<QIntPair> path = buildPath(robot);
@@ -57,34 +75,23 @@ void MotionPlanner::requestNextUpdate(const Robot &robot)
     }
 }
 
-bool MotionPlanner::search(int x, int y, int cost)
+bool MotionPlanner::expand(int x, int y, int cost)
 {
-    if (x < 0 || y < 0 || x >= m_map.width() || y >= m_map.height())
-        return false;
-
-    // TODO: Maybe change this to iterate throught the map until no improvements to
-    //       the path can be made.
-    if (m_map.point(x, y) <= cost) {
-        return false;
-    }
-
-    if (x == m_goalX && y == m_goalY) {
-        m_map.setPoint(x, y, cost);
-        return true;
-    }
-
-    if (qGray(m_grid.pixel(x, y)) > 0) {
-        return false;
-    }
-
-    m_map.setPoint(x, y, cost);
-
+    bool isUpdated = false;
     foreach (QIntPair delta, m_deltas) {
-        if (search(x + delta.first, y + delta.second, cost + 1))
-            return true;
+        int newX = x + delta.first;
+        int newY = y + delta.second;
+        int newCost = cost + 1; // TODO: Cost should be equal to sqrt(2) for 45 degrees movement
+        if (newX < 0 || newX >= m_map.width() ||
+            newY < 0 || newY >= m_map.height() ||
+            m_map.point(newX, newY) <= newCost ||
+            qGray(m_grid.pixel(newX, newY)) > 0)
+            continue;
+        m_map.setPoint(newX, newY, newCost);
+        isUpdated = true;
     }
 
-    return false;
+    return isUpdated;
 }
 
 QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
@@ -127,10 +134,15 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
 #ifndef MEEGO_EDITION_HARMATTAN
         pathImage.setPixel(x, y, qRgb(0, 255, 0));
 #endif
+        // Inverse path, because we're moving backwards from goal point
+        bestDelta.first = -bestDelta.first;
+        bestDelta.second = -bestDelta.second;
         path.push_front(bestDelta);
     }
 
 #ifndef MEEGO_EDITION_HARMATTAN
+    pathImage.setPixel(rx, ry, qRgb(0, 255, 255)); // initial position
+    pathImage.setPixel(m_goalX, m_goalY, qRgb(255, 127, 0)); // destination
     QString filePath = "../../data/robot/path/" + QDateTime::currentDateTime().toString("yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
     pathImage.save(filePath);
     qDebug() << "Saved motion plan image to:" << filePath;
@@ -158,5 +170,10 @@ Movement MotionPlanner::calculateMotionUpdate(const Robot &robot, const QList<QI
     qreal targetAngle = qAtan2(direction.second, direction.first);
     m.setTurn(targetAngle - robot.angle());
     m.setForward(distance * GRID_SCALE);
+
+    qDebug() << "Direction:" << targetAngle * 180.0 / M_PI << "Distance:" << distance;
+    qDebug() << "Current Robot:" << robot.angle() * 180.0 / M_PI << robot.position();
+    qDebug() << "Motion Update:" << m.turn() * 180.0 / M_PI << "turn" << m.forward() << "forward";
+
     return m;
 }

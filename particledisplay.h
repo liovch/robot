@@ -10,8 +10,6 @@ class ParticleDisplay : public QDeclarativeItem
 public:
     explicit ParticleDisplay(QDeclarativeItem *parent = 0);
     
-    void setWorldSize(qreal maxPosition);
-
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
 signals:
@@ -20,7 +18,6 @@ public slots:
     void setParticles(const QVector<Robot>& particles);
 
 private:
-    qreal m_maxPosition;
     QVector<Robot> m_particles;
     qreal m_particleSize;
     qreal m_directionVectorSize;

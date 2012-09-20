@@ -15,7 +15,7 @@ public:
     qreal turn() const { return m_turn; }
     qreal forward() const { return m_forward; }
 
-    void setTurn(qreal turn) { m_turn = turn; }
+    void setTurn(qreal turn);
     void setForward(qreal forward) { m_forward = forward; }
 
     Movement& operator=(const Movement& m);
