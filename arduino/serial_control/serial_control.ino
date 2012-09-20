@@ -99,7 +99,9 @@ void setup(void)
 void writeInt(unsigned int value)
 {
   Serial.write(value & 0xFF);
+  delay(1); // TODO: Need this to make sure bytes are not sent too fast
   Serial.write(value >> 8);
+  delay(1); // TODO: Is there any way to avoid this? Also need to increase baud rate?
 }
 
 void loop(void) 
