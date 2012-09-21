@@ -1,5 +1,6 @@
 #include "fcamimageprovider.h"
 #include "camera.h"
+#include <QTimer>
 #include <QDebug>
 
 FCamImageProvider::FCamImageProvider(QObject *parent) :
@@ -14,6 +15,14 @@ bool FCamImageProvider::init()
 }
 
 void FCamImageProvider::requestNextImage()
+{
+    // TODO: Make sure camera is ready
+    //       Otherwise I'm getting "VIDIOC_STREAMON: Device or resource busy"
+    qDebug() << "Taking another image soon...";
+    QTimer::singleShot(300, this, SLOT(takeImage()));
+}
+
+void FCamImageProvider::takeImage()
 {
     FCam::N9::Sensor sensor;
     FCam::Shot shot;
@@ -56,6 +65,7 @@ void FCamImageProvider::requestNextImage()
     char path[256];
     snprintf(path, 256, "/home/user/fcam%03d.jpg", m_index);
     FCam::saveJPEG(frame, path, 100);
+    qDebug() << "Image saved to" << path;
     m_index++;
 
     // Check that the pipeline is empty

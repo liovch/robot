@@ -20,7 +20,11 @@ signals:
     // both after move and resample updates.
     void particlesUpdated(const QVector<Robot>& particles);
 
+    // this is emited after resample operation
     void estimatedPosition(const Robot& robot);
+
+    // this is emited after move operation
+    void particlesMoved();
 
 public slots:
     void move(const Movement& m);

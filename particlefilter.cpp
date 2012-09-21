@@ -30,10 +30,14 @@ void ParticleFilter::move(const Movement &m)
         m_particles[n].move(m);
     }
     emit particlesUpdated(m_particles);
+    emit particlesMoved();
 }
 
 void ParticleFilter::resample(const QList<Marker> &markers)
 {
+    if (markers.isEmpty())
+        return;
+
     qDebug() << "resample";
     size_t N = m_particles.size();
     QVector<qreal> weights(N);

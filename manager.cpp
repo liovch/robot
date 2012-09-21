@@ -60,14 +60,16 @@ bool Manager::init()
     if (!m_motionPlanner.loadGridMap(GRID_MAP_PATH)) {
         qDebug() << "Failed to load motion planner map.";
     }
-    m_motionPlanner.setGoal(100, 50);
+    m_motionPlanner.setGoal(10, 10); // TODO: Shouldn't this be in meters?
 
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
+    QObject::connect(m_imageProcessor, SIGNAL(noMarkersFound()), m_imageProvider, SLOT(requestNextImage()));
     QObject::connect(&particleFilter, SIGNAL(estimatedPosition(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
     QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), m_motionProxy, SLOT(motionUpdate(Movement)));
     QObject::connect(m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
     // TODO: Connect failedMotionUpdate signal to motion planner
+    QObject::connect(&particleFilter, SIGNAL(particlesMoved()), m_imageProvider, SLOT(requestNextImage()));
 
     // TODO: MarkerProcessor is only used to print markers for debugging
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
@@ -94,7 +96,7 @@ bool Manager::init()
     particleViewer.setGeometry(300, 15, GRID_MAP_WIDTH * 10.0 * 5.0, GRID_MAP_HEIGHT * 10.0 * 5.0);
 #else
     QObject::connect(m_phoneUI.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
-    m_imageProvider->requestNextImage(); // request first data to show something on the screen at startup
+    m_imageProvider->takeImage(); // request first data to show something on the screen at startup
     m_phoneUI.showExpanded();
 #endif
     return true;
@@ -103,5 +105,4 @@ bool Manager::init()
 void Manager::mouseClicked()
 {
     // TODO: Probably remove this
-    m_imageProvider->requestNextImage();
 }

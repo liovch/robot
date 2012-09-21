@@ -124,6 +124,7 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
     int bestMarkerId = m_tracker->calc(image.bits(), -1, false, &markerInfo, &numMarkers);
     if (bestMarkerId < 0) {
         qDebug() << "No markers found";
+        emit noMarkersFound();
         return;
     }
 
@@ -159,13 +160,14 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
         markers.append(m);
     }
 
-    if (!markers.isEmpty())
-        m_previousMarkers = markers;
-
     if (!isValidMarker)
         qDebug() << "No markers found: reported duplicate markers";
 
     emit imageProcessed(markers);
+    if (!markers.isEmpty())
+        m_previousMarkers = markers;
+    else
+        emit noMarkersFound();
 }
 
 void ARToolkitLogger::artLog(const char *nStr)

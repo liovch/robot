@@ -1,4 +1,5 @@
 #include "motionplanner.h"
+#include "settings.h"
 #include <qmath.h>
 #include <QDateTime>
 
@@ -99,7 +100,6 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
     int rx = (int)(robot.position().first / GRID_SCALE + 0.5);
     int ry = (int)(robot.position().second / GRID_SCALE + 0.5);
 
-#ifndef MEEGO_EDITION_HARMATTAN
     QImage pathImage(m_grid.width(), m_grid.height(), QImage::Format_RGB888);
     for (int y = 0; y < m_map.height(); y++) {
         for (int x = 0; x < m_map.width(); x++) {
@@ -111,7 +111,6 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
             }
         }
     }
-#endif
 
     QList<QIntPair> path;
     int x = m_goalX, y = m_goalY;
@@ -131,22 +130,21 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
         }
         x += bestDelta.first;
         y += bestDelta.second;
-#ifndef MEEGO_EDITION_HARMATTAN
+
         pathImage.setPixel(x, y, qRgb(0, 255, 0));
-#endif
+
         // Inverse path, because we're moving backwards from goal point
         bestDelta.first = -bestDelta.first;
         bestDelta.second = -bestDelta.second;
         path.push_front(bestDelta);
     }
 
-#ifndef MEEGO_EDITION_HARMATTAN
     pathImage.setPixel(rx, ry, qRgb(0, 255, 255)); // initial position
     pathImage.setPixel(m_goalX, m_goalY, qRgb(255, 127, 0)); // destination
-    QString filePath = "../../data/robot/path/" + QDateTime::currentDateTime().toString("yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
+    QString filePath = PLAN_PATH + QDateTime::currentDateTime().toString("yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
     pathImage.save(filePath);
     qDebug() << "Saved motion plan image to:" << filePath;
-#endif
+
     return path;
 }
 

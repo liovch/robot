@@ -45,19 +45,19 @@ void initMarkerParams()
     MarkerParams params;
 
     // TODO: Find out marker ids
-    params.setId(7);
+    params.setId(9);
     params.setPosition(0.250, 0.205, 2.6);
     gMarkerParams.insert(params.id(), params);
 
-    params.setId(8);
+    params.setId(0);
     params.setPosition(0.245, 1.810, 2.6);
     gMarkerParams.insert(params.id(), params);
 
-    params.setId(9);
+    params.setId(1);
     params.setPosition(1.235, 1.800, 2.6);
     gMarkerParams.insert(params.id(), params);
 
-    params.setId(10);
+    params.setId(2);
     params.setPosition(1.230, 0.205, 2.6);
     gMarkerParams.insert(params.id(), params);
 }

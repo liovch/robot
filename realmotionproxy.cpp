@@ -33,6 +33,7 @@ void RealMotionProxy::motionUpdate(const Movement &m)
         qreal encoderReadings = calculateEncoderReadingTurn(m.turn());
         m_targetReadingLeft = m_encoderReadingLeft + quint16(encoderReadings + 0.5);
         m_targetReadingRight = m_encoderReadingRight + quint16(encoderReadings + 0.5);
+        qDebug() << "Starting turn left movement";
         m_status = MotionStatusTurning;
         m_socket->putChar('a'); // turn left (counter-clockwise)
     }
@@ -50,7 +51,9 @@ void RealMotionProxy::error(QBluetoothSocket::SocketError error)
 
 void RealMotionProxy::bluetoothDataReceived()
 {
-    if (m_socket->bytesAvailable() < 4)
+    qint64 bytesAvailable = m_socket->bytesAvailable();
+    qDebug() << "Bytes available on Bluetooth:" << bytesAvailable;
+    if (bytesAvailable < 4)
         return;
 
     if (m_socket->read((char*)&m_encoderReadingLeft, 2) != 2 ||
@@ -87,12 +90,14 @@ qreal RealMotionProxy::calculateEncoderReadingForward(qreal forward)
 
 void RealMotionProxy::moveForward()
 {
-    if (qFuzzyCompare(m_queuedForwardMovement, 0.0)) {
+    if (qFuzzyCompare(m_queuedForwardMovement, (qreal)0.0)) {
+        qDebug() << "No forward movement required";
         stop();
     } else {
         qreal encoderReadings = calculateEncoderReadingForward(m_queuedForwardMovement);
         m_targetReadingLeft = m_encoderReadingLeft + quint16(encoderReadings + 0.5);
         m_targetReadingRight = m_encoderReadingRight + quint16(encoderReadings + 0.5);
+        qDebug() << "Starting forward movement";
         m_status = MotionStatusMovingForward;
         m_socket->putChar('w'); // move forward
         // TODO: Robot can also move backwards
@@ -101,6 +106,7 @@ void RealMotionProxy::moveForward()
 
 void RealMotionProxy::stop()
 {
+    qDebug() << "Switching to stopped state";
     m_status = MotionStatusStopped;
     m_socket->putChar('x'); // stop robot motors
     // TODO: Convert result wheel encoders values to Movement and emit finishedMotionUpdate.

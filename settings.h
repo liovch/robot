@@ -13,8 +13,10 @@
 #define GRID_MAP_HEIGHT 10.0
 #ifndef MEEGO_EDITION_HARMATTAN
 #define GRID_MAP_PATH "../robot/data/grid.png"
+#define PLAN_PATH "../../data/robot/path/"
 #else
 #define GRID_MAP_PATH "/home/user/grid.png"
+#define PLAN_PATH "/home/user/"
 #endif
 
 // TODO: Check these

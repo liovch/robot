@@ -18,6 +18,7 @@ public:
 signals:
     
 public slots:
+    void takeImage();
 
 private:
     void errorCheck();

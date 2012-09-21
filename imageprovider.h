@@ -16,6 +16,7 @@ signals:
 
 public slots:
     virtual void requestNextImage() = 0;
+    virtual void takeImage() = 0;
 };
 
 #endif // IMAGEPROVIDER_H
