@@ -36,7 +36,6 @@ SOURCES += main.cpp \
     robot.cpp \
     random.cpp \
     particlefilter.cpp \
-    movement.cpp \
     particledisplay.cpp \
     manager.cpp \
     imageprovider.cpp \
@@ -75,7 +74,6 @@ HEADERS += \
     robot.h \
     random.h \
     particlefilter.h \
-    movement.h \
     particledisplay.h \
     settings.h \
     manager.h \
@@ -85,7 +83,8 @@ HEADERS += \
     artoolkitimageprocessor.h \
     motionplanner.h \
     vector2d.h \
-    motionproxy.h
+    motionproxy.h \
+    helpers.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS += fcamimageprovider.h \
                realmotionproxy.h

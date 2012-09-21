@@ -5,7 +5,12 @@ FakeMotionProxy::FakeMotionProxy(QObject *parent) :
 {
 }
 
-void FakeMotionProxy::motionUpdate(const Movement &m)
+void FakeMotionProxy::turnRequest(qreal angle)
 {
-    emit finishedMotionUpdate(m);
+    emit turnFinished(angle);
+}
+
+void FakeMotionProxy::moveRequest(qreal distance)
+{
+    emit moveFinished(distance);
 }

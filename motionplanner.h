@@ -23,7 +23,8 @@ public:
     void setGoal(int x, int y);
 
 signals:
-    void motionUpdate(const Movement& m);
+    void turnRequest(qreal angle);
+    void moveRequest(qreal distance);
 
 public slots:
     void requestNextUpdate(const Robot& robot); // estimated position of the robot
@@ -33,7 +34,7 @@ private:
     // builds path from goal position to the robot position specified as
     // a parameter
     QList<QIntPair> buildPath(const Robot& robot);
-    Movement calculateMotionUpdate(const Robot &robot, const QList<QIntPair> path);
+    void requestMotionUpdate(const Robot &robot, const QList<QIntPair> path);
 
     QImage m_grid; // predefined occupancy map
     int m_goalX, m_goalY;

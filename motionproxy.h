@@ -2,7 +2,6 @@
 #define MOTIONPROXY_H
 
 #include <QObject>
-#include "movement.h"
 
 // ** Implementations of this abstract class:
 //    - receive motion update from MotionPlanner;
@@ -16,20 +15,22 @@ public:
     explicit MotionProxy(QObject *parent = 0): QObject(parent) { }
     
 signals:
-    // Emited just after robot has finished motionUpdate or failed
-    // to perform motion update.
-    // Parameter indicates the actual movement robot has performed.
-    void finishedMotionUpdate(const Movement& m);
+    // Emited just after robot has finished moveRequest or failed
+    // to perform move request.
+    // Parameter indicates the actual distance robot has traveled.
+    void turnFinished(qreal angle);
+    void moveFinished(qreal distance);
 
-    // Emited when robot was unable to perform the requested motionUpdate.
+    // Emited when robot was unable to perform the requested movement.
     // This should indicate that robot is stuck.
-    // finishedMotionUpdate is still emited in this case.
-    void failedMotionUpdate();
+    // moveFinished or turnFinished is still emited in this case.
+    void motionRequestFailed();
     
 public slots:
     // Request motion update to perform on the robot.
     // This is connected to motion planner.
-    virtual void motionUpdate(const Movement& m) = 0;
+    virtual void turnRequest(qreal angle) = 0;
+    virtual void moveRequest(qreal distance) = 0;
 };
 
 #endif // MOTIONPROXY_H

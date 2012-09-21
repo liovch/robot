@@ -14,7 +14,8 @@ public:
     // slots
     // Request motion update to perform on the robot.
     // This is connected to motion planner.
-    void motionUpdate(const Movement& m);
+    void turnRequest(qreal angle);
+    void moveRequest(qreal distance);
 
 public slots:
 

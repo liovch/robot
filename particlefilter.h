@@ -27,7 +27,8 @@ signals:
     void particlesMoved();
 
 public slots:
-    void move(const Movement& m);
+    void turn(qreal angle); // [0; 2*PI)
+    void move(qreal distance);
     void resample(const QList<Marker>& markers);
 
 private:

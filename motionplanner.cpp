@@ -1,9 +1,11 @@
 #include "motionplanner.h"
+#include "helpers.h"
 #include "settings.h"
 #include <qmath.h>
 #include <QDateTime>
 
 #define GRID_SCALE 0.1 // each cell is 0.1m long
+#define TURN_ANGLE_REQUEST_THRESHOLD (5 * M_PI / 180.0)
 
 MotionPlanner::MotionPlanner(QObject *parent) :
     QObject(parent),
@@ -67,8 +69,7 @@ void MotionPlanner::requestNextUpdate(const Robot &robot)
         // the next movement update.
         QList<QIntPair> path = buildPath(robot);
         if (!path.isEmpty()) {
-            Movement m = calculateMotionUpdate(robot, path);
-            emit motionUpdate(m);
+            requestMotionUpdate(robot, path);
         }
     } else {
         qDebug() << "Unable to reach the goal from the current position.";
@@ -148,12 +149,8 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
     return path;
 }
 
-Movement MotionPlanner::calculateMotionUpdate(const Robot &robot, const QList<QIntPair> path)
+void MotionPlanner::requestMotionUpdate(const Robot &robot, const QList<QIntPair> path)
 {
-    Movement m;
-    if (path.isEmpty())
-        return m;
-
     int distance = 0;
     QIntPair direction = path.first();
     QListIterator<QIntPair> it(path);
@@ -166,12 +163,18 @@ Movement MotionPlanner::calculateMotionUpdate(const Robot &robot, const QList<QI
 
     // Note: There's a problem with qAtan2. It should be declared as qAtan2(y, x)
     qreal targetAngle = qAtan2(direction.second, direction.first);
-    m.setTurn(targetAngle - robot.angle());
-    m.setForward(distance * GRID_SCALE);
-
     qDebug() << "Direction:" << targetAngle * 180.0 / M_PI << "Distance:" << distance;
     qDebug() << "Current Robot:" << robot.angle() * 180.0 / M_PI << robot.position();
-    qDebug() << "Motion Update:" << m.turn() * 180.0 / M_PI << "turn" << m.forward() << "forward";
 
-    return m;
+    if (qAbs(targetAngle - robot.angle()) <= TURN_ANGLE_REQUEST_THRESHOLD) {
+        qDebug() << "Angle is within the threshold" << targetAngle - robot.angle();
+    } else {
+        qreal angle = normalizeAngle(targetAngle - robot.angle());
+        qDebug() << "Emitting turn request" << angle * 180.0 / M_PI;
+        emit turnRequest(angle);
+        return;
+    }
+
+    qDebug() << "Emitting move request" << distance * GRID_SCALE;
+    emit moveRequest(distance * GRID_SCALE);
 }

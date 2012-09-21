@@ -66,9 +66,11 @@ bool Manager::init()
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
     QObject::connect(m_imageProcessor, SIGNAL(noMarkersFound()), m_imageProvider, SLOT(requestNextImage()));
     QObject::connect(&particleFilter, SIGNAL(estimatedPosition(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
-    QObject::connect(&m_motionPlanner, SIGNAL(motionUpdate(Movement)), m_motionProxy, SLOT(motionUpdate(Movement)));
-    QObject::connect(m_motionProxy, SIGNAL(finishedMotionUpdate(Movement)), &particleFilter, SLOT(move(Movement)));
-    // TODO: Connect failedMotionUpdate signal to motion planner
+    QObject::connect(&m_motionPlanner, SIGNAL(moveRequest(qreal)), m_motionProxy, SLOT(moveRequest(qreal)));
+    QObject::connect(&m_motionPlanner, SIGNAL(turnRequest(qreal)), m_motionProxy, SLOT(turnRequest(qreal)));
+    QObject::connect(m_motionProxy, SIGNAL(moveFinished(qreal)), &particleFilter, SLOT(move(qreal)));
+    QObject::connect(m_motionProxy, SIGNAL(turnFinished(qreal)), &particleFilter, SLOT(turn(qreal)));
+    // TODO: Connect motionRequestFailed signal to motion planner
     QObject::connect(&particleFilter, SIGNAL(particlesMoved()), m_imageProvider, SLOT(requestNextImage()));
 
     // TODO: MarkerProcessor is only used to print markers for debugging

@@ -72,21 +72,23 @@ QList<qreal> Robot::sense() const
     return listDistances;
 }
 
-void Robot::move(const Movement &m)
+void Robot::move(qreal distance)
 {
-    // turn, and add randomness to the turning command
-    m_angle += m.turn();
-    m_angle += gRandom.gauss(0.0, m_noiseTurn);
-    m_angle = fmod(m_angle, 2.0 * M_PI);
-
     // move, and add randomness to the motion command
-    qreal distance = m.forward();
     distance += gRandom.gauss(0.0, m_noiseForward);
 
     m_position.first += qCos(m_angle) * distance;
     m_position.second += qSin(m_angle) * distance;
 
-    // TODO: Do we need a cyclic truncate?
+    // TODO: Do we need a cyclic truncate for position?
+}
+
+void Robot::turn(qreal angle)
+{
+    // turn, and add randomness to the turning command
+    m_angle += angle;
+    m_angle += gRandom.gauss(0.0, m_noiseTurn);
+    m_angle = fmod(m_angle, 2.0 * M_PI);
 }
 
 qreal Robot::measurementProbability(const QList<Marker> &markers) const

@@ -12,18 +12,16 @@ QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
 
-// ** This class receives motion update from MotionPlanner
-//    and converts it into 2 motor speed commands
-//    (1st for rotation and 2nd for forward movement) for the robot
-//    as [-1..1] value for each motor.
-//    The 1st (rotation) motor speed command is then sent to the robot.
+// ** This class receives motion request from MotionPlanner
+//    and calculates the distance each robot wheel must travel to
+//    perform the requested motion (in wheel encoder ticks).
+//    The motion command is then sent to the robot.
 //    This class then receives wheel encoder updates sent by Arduino
 //    and calculates the actual distance traveled by the robot.
-//    As soon as robot have travelled the requested distance 2nd motor
-//    command (for forward movement) is issued.
-//    Class then waits for the robot to finish the movement
-//    while receiving updates from wheel encoders sent by Arduino via
-//    Bluetooth.
+//    As soon as robot have travelled the requested distance stop command
+//    is sent to the robot and we wait for the robot to stop movement.
+//    The actual distance travelled by the robot is then calculated
+//    and emitted with the finished signal.
 //    If for some reason robot is unable to perform the requested motion
 //    and no updates from encoders are received for some time,
 //    current travelled angle and distance are sent to the particle filter,
@@ -37,9 +35,10 @@ public:
     explicit RealMotionProxy(QObject *parent = 0);
     
     // slots
-    // Request motion update to perform on the robot.
+    // Request motion to perform on the robot.
     // This is connected to motion planner.
-    void motionUpdate(const Movement& m);
+    void turnRequest(qreal angle);
+    void moveRequest(qreal distance);
 
 public slots:
     // bluetooth signals
@@ -48,25 +47,31 @@ public slots:
     void bluetoothDataReceived();
 
 private:
-    static qreal calculateEncoderReadingTurn(qreal angle);
-    static qreal calculateEncoderReadingForward(qreal forward);
+    static qreal convertAngleToEncoderReading(qreal angle);
+    static qreal convertDistanceToEncoderReading(qreal distance);
+    static qreal convertEncoderReadingToAngle(qreal encoderReading);
+    static qreal convertEncoderReadingToDistance(qreal encoderReading);
 
     QBluetoothSocket *m_socket;
 
     // Data from wheel encoders.
+    bool m_isEncoderReadingValid;
     quint16 m_encoderReadingLeft;
     quint16 m_encoderReadingRight;
 
     quint16 m_targetReadingLeft;
     quint16 m_targetReadingRight;
 
-    qreal m_queuedForwardMovement;
+    bool m_isEncoderUpdateReceived;
+    quint16 m_lastReadingLeft;
+    quint16 m_lastReadingRight;
 
-    enum Status { MotionStatusStopped, MotionStatusTurning, MotionStatusMovingForward } m_status;
+    enum Status { MotionStatusStopped, MotionStatusStopping, MotionStatusTurning, MotionStatusMovingForward };
+    Status m_status; // current status
+    Status m_statusSaved; // need to know what robot was doing before it stopped
 
 private slots:
-    void moveForward();
-    void stop();
+    void checkIfStopped();
 };
 
 #endif // REALMOTIONPROXY_H
