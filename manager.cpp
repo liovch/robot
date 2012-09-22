@@ -68,7 +68,7 @@ bool Manager::init()
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
     QObject::connect(m_imageProcessor, SIGNAL(noMarkersFound()), this, SLOT(noMarkersFound()));
-    QObject::connect(&particleFilter, SIGNAL(estimatedPosition(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
+    QObject::connect(&particleFilter, SIGNAL(estimatedPositionChanged(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
     QObject::connect(&m_motionPlanner, SIGNAL(moveRequest(qreal)), m_motionProxy, SLOT(moveRequest(qreal)));
     QObject::connect(&m_motionPlanner, SIGNAL(turnRequest(qreal)), m_motionProxy, SLOT(turnRequest(qreal)));
     QObject::connect(m_motionProxy, SIGNAL(moveFinished(qreal)), &particleFilter, SLOT(move(qreal)));

@@ -163,7 +163,7 @@ void MotionPlanner::requestMotionUpdate(const Robot &robot, const QList<QIntPair
 
     // Note: There's a problem with qAtan2. It should be declared as qAtan2(y, x)
     qreal targetAngle = qAtan2(direction.second, direction.first);
-    qDebug() << "Direction:" << targetAngle * 180.0 / M_PI << "Distance:" << distance;
+    qDebug() << "Direction:" << targetAngle * 180.0 / M_PI << "Distance:" << distance * GRID_SCALE;
     qDebug() << "Current Robot:" << robot.angle() * 180.0 / M_PI << robot.position();
 
     if (qAbs(targetAngle - robot.angle()) <= TURN_ANGLE_REQUEST_THRESHOLD) {

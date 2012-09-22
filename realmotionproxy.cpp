@@ -110,8 +110,8 @@ void RealMotionProxy::bluetoothDataReceived()
             m_isEncoderReadingValid = true;
         }
 
-        m_lastReadingLeft = m_encoderReadingLeft;
-        m_lastReadingRight = m_encoderReadingRight;
+        m_lastReadingLeft = encoderReadingLeft;
+        m_lastReadingRight = encoderReadingRight;
         m_isEncoderUpdateReceived = true;
 
         if (m_status != MotionStatusStopping &&
@@ -185,4 +185,5 @@ void RealMotionProxy::checkIfStopped()
     } else {
         qDebug() << "Invalid motion status recorded" << m_statusSaved;
     }
+    m_status = MotionStatusStopped;
 }
