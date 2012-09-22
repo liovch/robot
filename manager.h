@@ -22,6 +22,7 @@ public:
 signals:
     
 public slots:
+    void noMarkersFound();
     void mouseClicked();
 
 private:
@@ -38,6 +39,8 @@ private:
     ImageProcessor *m_imageProcessor;
     ParticleFilter particleFilter;
     MarkerProcessor markerProcessor;
+
+    int m_imageCaptureAttempt;
 };
 
 #endif // MANAGER_H

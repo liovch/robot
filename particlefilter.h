@@ -14,6 +14,7 @@ public:
     void init(size_t N, qreal maxPositionX, qreal maxPositionY);
 
     QVector<Robot> particles() const { return m_particles; }
+    const Robot& estimatedPosition() const { return m_bestParticle; }
 
 signals:
     // Note: This is emited every time particles changed
@@ -21,7 +22,7 @@ signals:
     void particlesUpdated(const QVector<Robot>& particles);
 
     // this is emited after resample operation
-    void estimatedPosition(const Robot& robot);
+    void estimatedPositionChanged(const Robot& robot);
 
     // this is emited after move operation
     void particlesMoved();

@@ -13,11 +13,14 @@
     #include "realmotionproxy.h"
 #endif
 
+#define MAX_IMAGE_CAPTURE_ATTEMPTS 5
+
 Manager::Manager(QObject *parent) :
     QObject(parent),
     m_motionProxy(0),
     m_imageProvider(0),
-    m_imageProcessor(0)
+    m_imageProcessor(0),
+    m_imageCaptureAttempt(0)
 {
 }
 
@@ -64,7 +67,7 @@ bool Manager::init()
 
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
-    QObject::connect(m_imageProcessor, SIGNAL(noMarkersFound()), m_imageProvider, SLOT(requestNextImage()));
+    QObject::connect(m_imageProcessor, SIGNAL(noMarkersFound()), this, SLOT(noMarkersFound()));
     QObject::connect(&particleFilter, SIGNAL(estimatedPosition(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
     QObject::connect(&m_motionPlanner, SIGNAL(moveRequest(qreal)), m_motionProxy, SLOT(moveRequest(qreal)));
     QObject::connect(&m_motionPlanner, SIGNAL(turnRequest(qreal)), m_motionProxy, SLOT(turnRequest(qreal)));
@@ -102,6 +105,18 @@ bool Manager::init()
     m_phoneUI.showExpanded();
 #endif
     return true;
+}
+
+void Manager::noMarkersFound()
+{
+    m_imageCaptureAttempt++;
+    if (m_imageCaptureAttempt >= MAX_IMAGE_CAPTURE_ATTEMPTS) {
+        m_imageCaptureAttempt = 0;
+        const Robot& position = particleFilter.estimatedPosition();
+        m_motionPlanner.requestNextUpdate(position);
+    } else {
+        m_imageProvider->requestNextImage();
+    }
 }
 
 void Manager::mouseClicked()

@@ -29,6 +29,7 @@ void ParticleFilter::move(qreal distance)
     for (int n = 0; n < m_particles.size(); n++) {
         m_particles[n].move(distance);
     }
+    m_bestParticle.move(distance); // TODO: Not sure if this is correct
     emit particlesUpdated(m_particles);
     emit particlesMoved();
 }
@@ -39,6 +40,7 @@ void ParticleFilter::turn(qreal angle)
     for (int n = 0; n < m_particles.size(); n++) {
         m_particles[n].turn(angle);
     }
+    m_bestParticle.turn(angle); // TODO: Not sure if this is correct
     emit particlesUpdated(m_particles);
     emit particlesMoved();
 }
@@ -72,10 +74,11 @@ void ParticleFilter::resample(const QList<Marker> &markers)
             index = (index + 1) % N;
         }
         resampled.append(m_particles[index]);
+        // TODO: Should we pick best particle here instead?
     }
 
     m_particles = QVector<Robot>::fromList(resampled);
     emit particlesUpdated(m_particles);
     qDebug() << "Estimated position:" << m_bestParticle.position();
-    emit estimatedPosition(m_bestParticle); // TODO: Emit this before resampling wheel?
+    emit estimatedPositionChanged(m_bestParticle); // TODO: Emit this before resampling wheel?
 }
