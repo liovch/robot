@@ -89,7 +89,7 @@ void RealMotionProxy::error(QBluetoothSocket::SocketError error)
 void RealMotionProxy::bluetoothDataReceived()
 {
     qint64 bytesAvailable = m_socket->bytesAvailable();
-    qDebug() << "Bytes available on Bluetooth:" << bytesAvailable;
+    //qDebug() << "Bytes available on Bluetooth:" << bytesAvailable;
     while (bytesAvailable >= 4) {
         quint16 encoderReadingLeft, encoderReadingRight;
         if (m_socket->read((char*)&encoderReadingLeft, 2) != 2 ||
@@ -99,7 +99,7 @@ void RealMotionProxy::bluetoothDataReceived()
         }
         bytesAvailable -= 4;
 
-        qDebug() << "Wheel encoders data:" << encoderReadingLeft << encoderReadingRight;
+        //qDebug() << "Wheel encoders data:" << encoderReadingLeft << encoderReadingRight;
         if (m_status == MotionStatusStopped) {
             qDebug() << "Warning: Wheels are moving while robot is in the stopped state";
             continue;

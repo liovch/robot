@@ -25,7 +25,7 @@ void ParticleFilter::init(size_t N, qreal maxPositionX, qreal maxPositionY)
 
 void ParticleFilter::move(qreal distance)
 {
-    qDebug() << "move" << distance;
+    qDebug() << "Move particles" << distance;
     for (int n = 0; n < m_particles.size(); n++) {
         m_particles[n].move(distance);
     }
@@ -36,7 +36,7 @@ void ParticleFilter::move(qreal distance)
 
 void ParticleFilter::turn(qreal angle)
 {
-    qDebug() << "turn" << angle;
+    qDebug() << "Turn particles" << angle * 180.0 / M_PI;
     for (int n = 0; n < m_particles.size(); n++) {
         m_particles[n].turn(angle);
     }

@@ -5,7 +5,7 @@
 #include <QDateTime>
 
 #define GRID_SCALE 0.1 // each cell is 0.1m long
-#define TURN_ANGLE_REQUEST_THRESHOLD (5 * M_PI / 180.0)
+#define TURN_ANGLE_REQUEST_THRESHOLD (15 * M_PI / 180.0)
 
 MotionPlanner::MotionPlanner(QObject *parent) :
     QObject(parent),
@@ -166,8 +166,8 @@ void MotionPlanner::requestMotionUpdate(const Robot &robot, const QList<QIntPair
     qDebug() << "Direction:" << targetAngle * 180.0 / M_PI << "Distance:" << distance * GRID_SCALE;
     qDebug() << "Current Robot:" << robot.angle() * 180.0 / M_PI << robot.position();
 
-    if (qAbs(targetAngle - robot.angle()) <= TURN_ANGLE_REQUEST_THRESHOLD) {
-        qDebug() << "Angle is within the threshold" << targetAngle - robot.angle();
+    if (angleDistance(targetAngle, robot.angle()) <= TURN_ANGLE_REQUEST_THRESHOLD) {
+        qDebug() << "Angle is within the threshold" << angleDistance(targetAngle, robot.angle());
     } else {
         qreal angle = normalizeAngle(targetAngle - robot.angle());
         qDebug() << "Emitting turn request" << angle * 180.0 / M_PI;
