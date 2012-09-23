@@ -41,7 +41,8 @@ void FCamImageProvider::takeImage()
     lens.setFocus(1.f, lens.maxFocusSpeed());
     while (lens.focusChanging()) { } // Wait to be done
 
-    shot.exposure = 40000; // 40 ms exposure
+    // TODO: Retry taking pictures with different exposure if required
+    shot.exposure = 100000; // 100 ms exposure
     shot.gain = 1.0f;      // minimum ISO
 
     // Specify the output resolution and format, and allocate storage for the resulting image
