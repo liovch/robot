@@ -142,7 +142,7 @@ QList<QIntPair> MotionPlanner::buildPath(const Robot &robot)
 
     pathImage.setPixel(rx, ry, qRgb(0, 255, 255)); // initial position
     pathImage.setPixel(m_goalX, m_goalY, qRgb(255, 127, 0)); // destination
-    QString filePath = PLAN_PATH + QDateTime::currentDateTime().toString("yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
+    QString filePath = PLAN_PATH + QDateTime::currentDateTime().toString("'MotionPlan: 'yyyy.MM.dd - hh_mm_ss_zzz") + ".png";
     pathImage.save(filePath);
     qDebug() << "Saved motion plan image to:" << filePath;
 

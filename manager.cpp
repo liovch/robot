@@ -75,6 +75,7 @@ bool Manager::init()
     QObject::connect(m_motionProxy, SIGNAL(turnFinished(qreal)), &particleFilter, SLOT(turn(qreal)));
     // TODO: Connect motionRequestFailed signal to motion planner
     QObject::connect(&particleFilter, SIGNAL(particlesMoved()), m_imageProvider, SLOT(requestNextImage()));
+    QObject::connect(&particleFilter, SIGNAL(particlesUpdated(QVector<Robot>)), &m_particleDisplay, SLOT(setParticles(QVector<Robot>)));
 
     // TODO: MarkerProcessor is only used to print markers for debugging
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));

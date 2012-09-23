@@ -6,6 +6,7 @@
 #include "imageprovider.h"
 #include "imageprocessor.h"
 #include "motionplanner.h"
+#include "particledisplay.h"
 #include "particlefilter.h"
 #include "qmlapplicationviewer.h"
 #include "markerprocessor.h"
@@ -37,6 +38,7 @@ private:
     MotionPlanner m_motionPlanner;
     ImageProvider *m_imageProvider;
     ImageProcessor *m_imageProcessor;
+    ParticleDisplay m_particleDisplay;
     ParticleFilter particleFilter;
     MarkerProcessor markerProcessor;
 

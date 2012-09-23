@@ -3,6 +3,7 @@
 #include "markerparams.h"
 #include "random.h"
 #include "camera.h"
+#include <QDebug>
 
 Robot::Robot(QObject *parent) :
     QObject(parent),
@@ -104,8 +105,13 @@ qreal Robot::measurementProbability(const QList<Marker> &markers) const
         if (!isMarkerVisible(params.x(), params.y(), params.z()))
             return 0.0;
 
+        // TODO: Take into account: camera is elevated from the ground.
         qreal distance = qSqrt(qPow((m_position.first - params.x()), 2) + qPow((m_position.second - params.y()), 2) + params.z() * params.z());
-        probability *= gRandom.gaussian(distance, m_noiseSense, m.distance());
+        qreal gauss = gRandom.gaussian(distance, m_noiseSense, m.distance());
+        if (gauss > 1.0) {
+            qDebug() << "Gaussian probability is wrong:" << gauss << "mu:" << distance << "sigma:" << m_noiseSense << "x:" << m.distance();
+        }
+        probability *= gauss;
     }
 
     return probability;

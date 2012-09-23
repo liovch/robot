@@ -42,5 +42,6 @@ qreal Marker::distance() const
     if (id == MARKER_NULL)
         return 0.0;
 
+    // TODO: Should I use Z-distance only and ignore X and Y offsets?
     return qSqrt(modelView[12]*modelView[12] + modelView[13]*modelView[13] + modelView[14]*modelView[14]);
 }

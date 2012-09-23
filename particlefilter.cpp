@@ -79,6 +79,6 @@ void ParticleFilter::resample(const QList<Marker> &markers)
 
     m_particles = QVector<Robot>::fromList(resampled);
     emit particlesUpdated(m_particles);
-    qDebug() << "Estimated position:" << m_bestParticle.position();
+    qDebug() << "Estimated position:" << m_bestParticle.position() << "Angle:" << m_bestParticle.angle() * 180.0 / M_PI << "Weight:" << maxWeight;
     emit estimatedPositionChanged(m_bestParticle); // TODO: Emit this before resampling wheel?
 }

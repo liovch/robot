@@ -118,7 +118,14 @@ void RealMotionProxy::bluetoothDataReceived()
         if (m_status != MotionStatusStopping &&
             encoderReadingLeft - m_encoderReadingLeft >= m_targetReadingLeft &&
             encoderReadingRight - m_encoderReadingRight >= m_targetReadingRight) {
-            qDebug() << "Switching to stopped state";
+            qDebug() << "Switching to stopped state" << encoderReadingLeft << encoderReadingRight;
+
+            if (m_status == MotionStatusTurning) {
+                qDebug() << "Angle turned so far:" << 180.0 / M_PI * convertEncoderReadingToAngle((encoderReadingLeft + encoderReadingRight) / 2 - (m_encoderReadingLeft + m_encoderReadingRight) / 2);
+            } else if (m_status == MotionStatusMovingForward) {
+                qDebug() << "Distance traveled so far:" << convertEncoderReadingToDistance((encoderReadingLeft + encoderReadingRight) / 2 - (m_encoderReadingLeft + m_encoderReadingRight) / 2);
+            }
+
             m_statusSaved = m_status;
             m_status = MotionStatusStopping;
             m_socket->putChar('x'); // stop robot motors

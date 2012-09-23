@@ -1,21 +1,20 @@
 #ifndef PARTICLEDISPLAY_H
 #define PARTICLEDISPLAY_H
 
-#include <QDeclarativeItem>
+#include <QVector>
 #include "robot.h"
 
-class ParticleDisplay : public QDeclarativeItem
+class ParticleDisplay : public QObject
 {
     Q_OBJECT
 public:
-    explicit ParticleDisplay(QDeclarativeItem *parent = 0);
-    
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    explicit ParticleDisplay(QObject *parent = 0);
 
 signals:
     
 public slots:
     void setParticles(const QVector<Robot>& particles);
+    void saveImage();
 
 private:
     QVector<Robot> m_particles;
