@@ -101,7 +101,7 @@ bool Manager::init()
     particleViewer.setGeometry(300, 15, GRID_MAP_WIDTH * 10.0 * 5.0, GRID_MAP_HEIGHT * 10.0 * 5.0);
 #else
     QObject::connect(m_phoneUI.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
-    m_imageProvider->takeImage(); // request first data to show something on the screen at startup
+    QObject::connect(m_motionProxy, SIGNAL(ready()), m_imageProvider, SLOT(takeImage())); // take first image after bluetooth is connected
     m_phoneUI.showExpanded();
 #endif
     return true;

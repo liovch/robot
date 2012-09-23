@@ -78,6 +78,7 @@ void RealMotionProxy::moveRequest(qreal distance)
 void RealMotionProxy::connected()
 {
     qDebug() << "Bluetooth has connected successfully";
+    emit ready();
 }
 
 void RealMotionProxy::error(QBluetoothSocket::SocketError error)

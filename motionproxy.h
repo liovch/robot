@@ -15,6 +15,9 @@ public:
     explicit MotionProxy(QObject *parent = 0): QObject(parent) { }
     
 signals:
+    // emited when the object becomes ready to receive data
+    void ready();
+
     // Emited just after robot has finished moveRequest or failed
     // to perform move request.
     // Parameter indicates the actual distance robot has traveled.
