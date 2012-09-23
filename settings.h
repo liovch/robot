@@ -5,9 +5,10 @@
 #include "qplatformdefs.h"
 
 #define NUM_PARTICLES 1000
-#define NOISE_TURN    (M_PI / 24.0)
-#define NOISE_FORWARD 0.01
-#define NOISE_SENSE   0.3
+#define NOISE_TURN    (M_PI / 12.0) // 45 degrees
+#define NOISE_FORWARD 0.1
+#define NOISE_SENSE   0.4 // TODO: This has to be >= 0.4,
+                          //       otherwise measurement probability can be > 1.0
 
 #define GRID_MAP_WIDTH  20.0
 #define GRID_MAP_HEIGHT 10.0
