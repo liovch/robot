@@ -3,6 +3,8 @@
 #include "ARToolKitPlus/TrackerSingleMarkerImpl.h"
 #include <QDebug>
 
+#define MINIMUM_MARKER_POSITION_Z 2.0
+
 class ARToolkitLogger : public ARToolKitPlus::Logger
 {
     void artLog(const char* nStr);
@@ -155,8 +157,13 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
         // TODO: Process errors?
         m_tracker->calcOpenGLMatrixFromMarker(&markerInfo[i], nPatternCenter, MarkerParams::size(), m.modelView);
 
+        if (m.modelView[14] < MINIMUM_MARKER_POSITION_Z) {
+            qDebug() << "Marker is too close:" << m.modelView[14];
+            continue;
+        }
+
         isValidMarker = true;
-        qDebug() << "Coordinates:" << m.modelView[12] << m.modelView[13] << m.modelView[14];
+        qDebug() << "Coordinates:" << m.modelView[12] << m.modelView[13] << m.modelView[14] << "distance:" << m.distance();
         markers.append(m);
     }
 
