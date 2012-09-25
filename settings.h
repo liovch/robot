@@ -5,10 +5,16 @@
 #include "qplatformdefs.h"
 
 #define NUM_PARTICLES 1000
+
+// TODO: How do we measure real noise?
+// TODO: Should we move this out and make them global?
 #define NOISE_TURN    (M_PI / 12.0) // 45 degrees
 #define NOISE_FORWARD 0.1
-#define NOISE_SENSE   0.4 // TODO: This has to be >= 0.4,
-                          //       otherwise measurement probability can be > 1.0
+// TODO: This is probably proportional to the distance to the object
+#define NOISE_SENSE_DISTANCE 0.4 // TODO: This has to be >= 0.4,
+                                 //       otherwise measurement probability can be > 1.0
+#define NOISE_SENSE_ANGLE (M_PI / 36.0) // 5 degrees
+#define ANGLE_AZIMUTH_OFFSET 123 // in degrees
 
 #define GRID_MAP_WIDTH  20.0
 #define GRID_MAP_HEIGHT 10.0

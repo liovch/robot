@@ -3,24 +3,17 @@
 #include <QDeclarativeItem>
 #include <QDebug>
 #include "settings.h"
-#include "artoolkitimageprocessor.h"
 #ifndef MEEGO_EDITION_HARMATTAN
-    #include "particledisplay.h"
     #include "folderimageprovider.h"
     #include "fakemotionproxy.h"
 #else
-    #include "fcamimageprovider.h"
     #include "realmotionproxy.h"
 #endif
-
-#define MAX_IMAGE_CAPTURE_ATTEMPTS 5
 
 Manager::Manager(QObject *parent) :
     QObject(parent),
     m_motionProxy(0),
-    m_imageProvider(0),
-    m_imageProcessor(0),
-    m_imageCaptureAttempt(0)
+    m_isReady(false)
 {
 }
 
@@ -47,38 +40,34 @@ bool Manager::init()
     m_phoneUI.setOrientation(QmlApplicationViewer::ScreenOrientationAuto);
     m_phoneUI.setMainQmlFile("qml/robot/camera.qml");
 
-    FCamImageProvider *imageProvider = new FCamImageProvider(this);
-    if (!imageProvider->init()) {
-        qDebug() << "Failed to initialize camera";
-        return false;
-    }
-
     m_motionProxy = new RealMotionProxy(this);
 #endif // !MEEGO_EDITION_HARMATTAN
 
-    m_imageProvider = imageProvider;
-    m_imageProcessor = new ARToolkitImageProcessor(this);
+    m_sensorManager = new SensorManager(this);
+    if (!m_sensorManager->init()) {
+        qDebug() << "Failed to init sensor manager";
+        return false;
+    }
 
     particleFilter.init(NUM_PARTICLES, GRID_MAP_WIDTH, GRID_MAP_HEIGHT);
     if (!m_motionPlanner.loadGridMap(GRID_MAP_PATH)) {
         qDebug() << "Failed to load motion planner map.";
+        return false;
     }
     m_motionPlanner.setGoal(10, 10); // TODO: Shouldn't this be in meters?
 
-    QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
-    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &particleFilter, SLOT(resample(QList<Marker>)));
-    QObject::connect(m_imageProcessor, SIGNAL(noMarkersFound()), this, SLOT(noMarkersFound()));
+    QObject::connect(m_sensorManager, SIGNAL(dataChanged(SensorData)), &particleFilter, SLOT(resample(SensorData)));
     QObject::connect(&particleFilter, SIGNAL(estimatedPositionChanged(Robot)), &m_motionPlanner, SLOT(requestNextUpdate(Robot)));
     QObject::connect(&m_motionPlanner, SIGNAL(moveRequest(qreal)), m_motionProxy, SLOT(moveRequest(qreal)));
     QObject::connect(&m_motionPlanner, SIGNAL(turnRequest(qreal)), m_motionProxy, SLOT(turnRequest(qreal)));
     QObject::connect(m_motionProxy, SIGNAL(moveFinished(qreal)), &particleFilter, SLOT(move(qreal)));
     QObject::connect(m_motionProxy, SIGNAL(turnFinished(qreal)), &particleFilter, SLOT(turn(qreal)));
     // TODO: Connect motionRequestFailed signal to motion planner
-    QObject::connect(&particleFilter, SIGNAL(particlesMoved()), m_imageProvider, SLOT(requestNextImage()));
+    QObject::connect(&particleFilter, SIGNAL(particlesMoved()), m_sensorManager, SLOT(requestNewData()));
     QObject::connect(&particleFilter, SIGNAL(particlesUpdated(QVector<Robot>)), &m_particleDisplay, SLOT(setParticles(QVector<Robot>)));
 
-    // TODO: MarkerProcessor is only used to print markers for debugging
-    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
+//    // TODO: MarkerProcessor is only used to print markers for debugging
+//    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), &markerProcessor, SLOT(processMarkers(QList<Marker>)));
 
 #ifndef MEEGO_EDITION_HARMATTAN
     // connect QML components
@@ -102,25 +91,26 @@ bool Manager::init()
     particleViewer.setGeometry(300, 15, GRID_MAP_WIDTH * 10.0 * 5.0, GRID_MAP_HEIGHT * 10.0 * 5.0);
 #else
     QObject::connect(m_phoneUI.rootObject(), SIGNAL(qmlClicked()), this, SLOT(mouseClicked()));
-    QObject::connect(m_motionProxy, SIGNAL(ready()), m_imageProvider, SLOT(takeImage())); // take first image after bluetooth is connected
+    QObject::connect(m_sensorManager, SIGNAL(ready()), this, SLOT(checkIfReady()));
+    QObject::connect(m_motionProxy, SIGNAL(ready()), this, SLOT(checkIfReady()));
     m_phoneUI.showExpanded();
 #endif
     return true;
 }
 
-void Manager::noMarkersFound()
-{
-    m_imageCaptureAttempt++;
-    if (m_imageCaptureAttempt >= MAX_IMAGE_CAPTURE_ATTEMPTS) {
-        m_imageCaptureAttempt = 0;
-        const Robot& position = particleFilter.estimatedPosition();
-        m_motionPlanner.requestNextUpdate(position);
-    } else {
-        m_imageProvider->requestNextImage();
-    }
-}
-
 void Manager::mouseClicked()
 {
     // TODO: Probably remove this
+}
+
+void Manager::checkIfReady()
+{
+    if (m_isReady)
+        return;
+
+    if (m_sensorManager->isReady() && m_motionProxy->isReady()) {
+        m_isReady = true;
+        emit ready();
+        m_sensorManager->requestNewData();
+    }
 }

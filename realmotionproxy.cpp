@@ -78,6 +78,11 @@ void RealMotionProxy::moveRequest(qreal distance)
 void RealMotionProxy::connected()
 {
     qDebug() << "Bluetooth has connected successfully";
+
+    if (m_isReady)
+        return;
+
+    m_isReady = true;
     emit ready();
 }
 

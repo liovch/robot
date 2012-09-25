@@ -2,6 +2,7 @@
 #define HELPERS_H
 
 #include <qmath.h>
+#include "settings.h"
 
 inline qreal normalizeAngle(qreal angle)
 {
@@ -20,6 +21,11 @@ inline qreal angleDistance(qreal angle1, qreal angle2)
         distance = 2 * M_PI - distance;
     }
     return normalizeAngle(distance);
+}
+
+inline qreal azimuthToAngle(qreal azimuth)
+{
+    return (azimuth - ANGLE_AZIMUTH_OFFSET) * M_PI / 180.0;
 }
 
 #endif // HELPERS_H

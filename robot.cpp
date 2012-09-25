@@ -3,6 +3,7 @@
 #include "markerparams.h"
 #include "random.h"
 #include "camera.h"
+#include "helpers.h"
 #include <QDebug>
 
 Robot::Robot(QObject *parent) :
@@ -46,21 +47,6 @@ void Robot::setAngle(qreal angle)
     m_angle = angle;
 }
 
-void Robot::setNoiseForward(qreal noise)
-{
-    m_noiseForward = noise;
-}
-
-void Robot::setNoiseTurn(qreal noise)
-{
-    m_noiseTurn = noise;
-}
-
-void Robot::setNoiseSense(qreal noise)
-{
-    m_noiseSense = noise;
-}
-
 QList<qreal> Robot::sense() const
 {
     QList<qreal> listDistances;
@@ -92,13 +78,11 @@ void Robot::turn(qreal angle)
     m_angle = fmod(m_angle, 2.0 * M_PI);
 }
 
-qreal Robot::measurementProbability(const QList<Marker> &markers) const
+qreal Robot::measurementProbability(const SensorData& data) const
 {
-    if (markers.isEmpty())
-        return 0.0; // TODO: Use "can't see a marker" probability instead of 0.0
-
+    // TODO: Use "can't see a marker" probability instead?
     qreal probability = 1.0;
-    foreach (Marker m, markers) {
+    foreach (Marker m, data.m_markers) {
         MarkerParams params = gMarkerParams.value(m.id);
 
         // TODO: Maybe use "false marker probability" instead of 0.0 ?
@@ -107,12 +91,15 @@ qreal Robot::measurementProbability(const QList<Marker> &markers) const
 
         // TODO: Take into account: camera is elevated from the ground.
         qreal distance = qSqrt(qPow((m_position.first - params.x()), 2) + qPow((m_position.second - params.y()), 2) + params.z() * params.z());
-        qreal gauss = gRandom.gaussian(distance, m_noiseSense, m.distance());
+        qreal gauss = gRandom.gaussian(distance, NOISE_SENSE_DISTANCE, m.distance());
         if (gauss > 1.0) {
             qDebug() << "Gaussian probability is wrong:" << gauss << "mu:" << distance << "sigma:" << m_noiseSense << "x:" << m.distance();
         }
         probability *= gauss;
     }
+
+    qreal gauss = gRandom.gaussian(m_angle, NOISE_SENSE_ANGLE, azimuthToAngle(data.m_azimuth));
+    probability *= gauss;
 
     return probability;
 }
@@ -145,9 +132,6 @@ Robot &Robot::operator =(const Robot &r)
 {
     m_position = r.position();
     m_angle = r.angle();
-    m_noiseTurn = r.noiseTurn();
-    m_noiseForward = r.noiseForward();
-    m_noiseSense = r.noiseSense();
 
     return *this;
 }

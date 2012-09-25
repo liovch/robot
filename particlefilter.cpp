@@ -15,11 +15,6 @@ void ParticleFilter::init(size_t N, qreal maxPositionX, qreal maxPositionY)
         do {
             m_particles[n].random(maxPositionX, maxPositionY);
         } while (!m_particles[n].isEveryMarkerVisible());
-
-        // TODO: Maybe noise could be global parameter
-        m_particles[n].setNoiseForward(NOISE_FORWARD);
-        m_particles[n].setNoiseTurn(NOISE_TURN);
-        m_particles[n].setNoiseSense(NOISE_SENSE);
     }
 }
 
@@ -45,18 +40,15 @@ void ParticleFilter::turn(qreal angle)
     emit particlesMoved();
 }
 
-void ParticleFilter::resample(const QList<Marker> &markers)
+void ParticleFilter::resample(const SensorData &data)
 {
-    if (markers.isEmpty())
-        return;
-
     qDebug() << "resample";
     size_t N = m_particles.size();
     QVector<qreal> weights(N);
 
     qreal maxWeight = 0.0;
     for (size_t n = 0; n < N; n++) {
-        weights[n] = m_particles[n].measurementProbability(markers);
+        weights[n] = m_particles[n].measurementProbability(data);
         if (weights[n] > maxWeight) {
             maxWeight = weights[n];
             m_bestParticle = m_particles[n];

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QVector>
 #include "robot.h"
+#include "sensordata.h"
 
 class ParticleFilter : public QObject
 {
@@ -30,7 +31,7 @@ signals:
 public slots:
     void turn(qreal angle); // [0; 2*PI)
     void move(qreal distance);
-    void resample(const QList<Marker>& markers);
+    void resample(const SensorData& data);
 
 private:
     QVector<Robot> m_particles;

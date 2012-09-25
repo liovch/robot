@@ -12,7 +12,7 @@ contains(MEEGO_EDITION,harmattan) {
 
     QT += declarative
     CONFIG += mobility
-    MOBILITY = multimedia connectivity
+    MOBILITY = multimedia connectivity sensors systeminfo
 }
 
 
@@ -44,7 +44,9 @@ SOURCES += main.cpp \
     artoolkitimageprocessor.cpp \
     motionplanner.cpp \
     vector2d.cpp \
-    motionproxy.cpp
+    motionproxy.cpp \
+    sensormanager.cpp \
+    sensordata.cpp
 contains(MEEGO_EDITION,harmattan) {
     SOURCES += fcamimageprovider.cpp \
                realmotionproxy.cpp
@@ -84,7 +86,9 @@ HEADERS += \
     motionplanner.h \
     vector2d.h \
     motionproxy.h \
-    helpers.h
+    helpers.h \
+    sensormanager.h \
+    sensordata.h
 contains(MEEGO_EDITION,harmattan) {
     HEADERS += fcamimageprovider.h \
                realmotionproxy.h

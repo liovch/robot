@@ -3,14 +3,13 @@
 
 #include <QObject>
 #include "qplatformdefs.h"
-#include "imageprovider.h"
-#include "imageprocessor.h"
 #include "motionplanner.h"
 #include "particledisplay.h"
 #include "particlefilter.h"
 #include "qmlapplicationviewer.h"
-#include "markerprocessor.h"
+//#include "markerprocessor.h"
 #include "motionproxy.h"
+#include "sensormanager.h"
 
 class Manager : public QObject
 {
@@ -19,12 +18,16 @@ public:
     explicit Manager(QObject *parent = 0);
     
     bool init();
+    bool isReady() const { return m_isReady; }
 
 signals:
+    void ready();
     
 public slots:
-    void noMarkersFound();
     void mouseClicked();
+
+private slots:
+    void checkIfReady();
 
 private:
 #ifndef MEEGO_EDITION_HARMATTAN
@@ -34,15 +37,14 @@ private:
     QmlApplicationViewer m_phoneUI;
 #endif
 
+    SensorManager *m_sensorManager;
     MotionProxy *m_motionProxy;
     MotionPlanner m_motionPlanner;
-    ImageProvider *m_imageProvider;
-    ImageProcessor *m_imageProcessor;
     ParticleDisplay m_particleDisplay;
     ParticleFilter particleFilter;
-    MarkerProcessor markerProcessor;
+//    MarkerProcessor markerProcessor;
 
-    int m_imageCaptureAttempt;
+    bool m_isReady;
 };
 
 #endif // MANAGER_H

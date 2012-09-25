@@ -170,7 +170,7 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
     if (!isValidMarker)
         qDebug() << "No markers found: reported duplicate markers";
 
-    emit imageProcessed(markers);
+    emit markersChanged(markers);
     if (!markers.isEmpty())
         m_previousMarkers = markers;
     else

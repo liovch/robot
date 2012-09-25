@@ -16,7 +16,7 @@ public:
 signals:
     // emitted after image processor finishes the current image
     // empty list (along with noMarkersFound) is emitted if no markers were found on the current image
-    void imageProcessed(const QList<Marker>& markers);
+    void markersChanged(const QList<Marker>& markers);
     void noMarkersFound();
 
 public slots:

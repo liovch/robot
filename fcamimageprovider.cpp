@@ -18,7 +18,7 @@ void FCamImageProvider::requestNextImage()
 {
     // TODO: Make sure camera is ready
     //       Otherwise I'm getting "VIDIOC_STREAMON: Device or resource busy"
-    qDebug() << "Taking another image soon...";
+    qDebug() << "Taking an image soon...";
     QTimer::singleShot(300, this, SLOT(takeImage()));
 }
 
@@ -42,7 +42,7 @@ void FCamImageProvider::takeImage()
     while (lens.focusChanging()) { } // Wait to be done
 
     // TODO: Retry taking pictures with different exposure if required
-    shot.exposure = 100000; // 100 ms exposure
+    shot.exposure = 200000; // 100 ms exposure
     shot.gain = 1.0f;      // minimum ISO
 
     // Specify the output resolution and format, and allocate storage for the resulting image

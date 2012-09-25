@@ -12,7 +12,9 @@ class MotionProxy : public QObject
 {
     Q_OBJECT
 public:
-    explicit MotionProxy(QObject *parent = 0): QObject(parent) { }
+    explicit MotionProxy(QObject *parent = 0): QObject(parent), m_isReady(false) { }
+
+    bool isReady() const { return m_isReady; }
     
 signals:
     // emited when the object becomes ready to receive data
@@ -34,6 +36,9 @@ public slots:
     // This is connected to motion planner.
     virtual void turnRequest(qreal angle) = 0;
     virtual void moveRequest(qreal distance) = 0;
+
+protected:
+    bool m_isReady;
 };
 
 #endif // MOTIONPROXY_H
