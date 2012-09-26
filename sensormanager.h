@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QtMobility/qmobilityglobal.h>
 #include <QCompass>
+#include <QMagnetometer>
 #include "imageprovider.h"
 #include "imageprocessor.h"
 #include "marker.h"
@@ -11,6 +12,7 @@
 
 QTM_BEGIN_NAMESPACE
 class QCompass;
+class QMagnetometer;
 QTM_END_NAMESPACE
 
 QTM_USE_NAMESPACE
@@ -34,6 +36,7 @@ public slots:
 
 private slots:
     void onCompassReadingChanged();
+    void onMagnetometerReadingChanged();
 
 private:
     void signalIfReady();
@@ -45,6 +48,9 @@ private:
 
     QCompass *m_compass;
     QCompassReading* m_compassReading;
+
+    QMagnetometer *m_magnetometer;
+    QMagnetometerReading *m_magnetometerReading;
 
     bool m_isCompassReady;
     bool m_isCameraReady;

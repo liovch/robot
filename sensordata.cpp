@@ -6,7 +6,8 @@ SensorData::SensorData(QObject *parent) :
 {
 }
 
-SensorData::SensorData(const SensorData &data)
+SensorData::SensorData(const SensorData &data) :
+    QObject(data.parent())
 {
     operator =(data);
 }
@@ -15,4 +16,5 @@ SensorData &SensorData::operator =(const SensorData &data)
 {
     m_markers = data.m_markers;
     m_azimuth = data.m_azimuth;
+    return *this;
 }
