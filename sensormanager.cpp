@@ -38,9 +38,10 @@ bool SensorManager::init()
 
     m_imageProvider = imageProvider;
     m_imageProcessor = new ARToolkitImageProcessor(this);
+    m_isCameraReady = true; // TODO: Add an actual signal?
 
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
-    QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), this, SLOT(onMarkersChanged(QList<Marker>)));
+    QObject::connect(m_imageProcessor, SIGNAL(markersChanged(QList<Marker>)), this, SLOT(onMarkersChanged(QList<Marker>)));
 
     QObject::connect(m_magnetometer, SIGNAL(readingChanged()), this, SLOT(onMagnetometerReadingChanged()));
     return true;
@@ -48,8 +49,10 @@ bool SensorManager::init()
 
 void SensorManager::onMarkersChanged(const QList<Marker> &markers)
 {
+    qDebug() << "onMarkersChanged:" << markers.isEmpty();
     m_data.m_markers = markers;
     if (m_data.m_markers.isEmpty() && m_imageCaptureAttempt < MAX_IMAGE_CAPTURE_ATTEMPTS) {
+        qDebug() << "Requesting another image:" << m_imageCaptureAttempt << "of" << MAX_IMAGE_CAPTURE_ATTEMPTS;
         m_imageCaptureAttempt++;
         m_imageProvider->requestNextImage();
     } else {
@@ -72,9 +75,10 @@ void SensorManager::onMagnetometerReadingChanged()
             qDebug() << "Magnetometer is ready";
             signalIfReady();
         }
-    } else {
-        qDebug() << "Magnetometer reading: " << magnetometerToAngle(m_magnetometerReading->x(), m_magnetometerReading->y()) * 180.0 / M_PI;
     }
+//    else {
+//        qDebug() << "Magnetometer reading: " << magnetometerToAngle(m_magnetometerReading->x(), m_magnetometerReading->y()) * 180.0 / M_PI;
+//    }
 }
 
 void SensorManager::signalIfReady()

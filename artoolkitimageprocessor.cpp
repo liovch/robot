@@ -121,16 +121,16 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
         return;
 
     // here we go, just one call to find the camera pose
+    QList<Marker> markers;
     int numMarkers = 0;
     ARToolKitPlus::ARMarkerInfo *markerInfo = 0;
     int bestMarkerId = m_tracker->calc(image.bits(), -1, false, &markerInfo, &numMarkers);
     if (bestMarkerId < 0) {
         qDebug() << "No markers found";
+        emit markersChanged(markers);
         emit noMarkersFound();
         return;
     }
-
-    QList<Marker> markers;
 
     // TODO: Find out why we're getting duplicate values sometimes
     bool isValidMarker = false;
@@ -168,7 +168,7 @@ void ARToolkitImageProcessor::processImage(const QImage &img)
     }
 
     if (!isValidMarker)
-        qDebug() << "No markers found: reported duplicate markers";
+        qDebug() << "No markers found: reported invalid markers";
 
     emit markersChanged(markers);
     if (!markers.isEmpty())

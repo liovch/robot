@@ -29,18 +29,39 @@ inline bool isAngleInRange(qreal angle, qreal minAngle, qreal maxAngle)
     angle = normalizeAngle(angle);
     minAngle = normalizeAngle(minAngle);
     maxAngle = normalizeAngle(maxAngle);
-    return angle >= minAngle && angle < maxAngle;
+    bool result;
+    if (minAngle > maxAngle) {
+        result = angle >= minAngle || angle < maxAngle;
+    } else {
+        result = angle >= minAngle && angle < maxAngle;
+    }
+//    if (result)
+//        qDebug() << "angle:" << angle << "minAngle:" << minAngle << "maxAngle:" << maxAngle;
+    return result;
 }
 
 inline qreal scaleAngleInRange(qreal angle, qreal minAngle, qreal maxAngle, qreal minValue, qreal maxValue)
 {
+    Q_ASSERT(isAngleInRange(angle, minAngle, maxAngle));
+
+    angle = normalizeAngle(angle);
+    minAngle = normalizeAngle(minAngle);
+    maxAngle = normalizeAngle(maxAngle);
+    if (minAngle > maxAngle) {
+        if (angle >= minAngle) {
+            maxAngle += 2.0 * M_PI;
+        } else {
+            Q_ASSERT(angle < maxAngle);
+            minAngle -= 2.0 * M_PI;
+        }
+    }
     return minValue + (angle - minAngle) * (maxValue - minValue) / (maxAngle - minAngle);
 }
 
-#define MAGNETOMETER_ANGLE_0   -0.28
-#define MAGNETOMETER_ANGLE_90  1.20
-#define MAGNETOMETER_ANGLE_180 2.88
-#define MAGNETOMETER_ANGLE_270 -1.86
+#define MAGNETOMETER_ANGLE_0   -0.46
+#define MAGNETOMETER_ANGLE_90   1.24
+#define MAGNETOMETER_ANGLE_180  2.79
+#define MAGNETOMETER_ANGLE_270 -2.055
 
 inline qreal magnetometerToAngle(qreal x, qreal y)
 {
