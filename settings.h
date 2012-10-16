@@ -14,7 +14,6 @@
 #define NOISE_SENSE_DISTANCE 0.4 // TODO: This has to be >= 0.4,
                                  //       otherwise measurement probability can be > 1.0
 #define NOISE_SENSE_ANGLE (M_PI / 36.0) // 5 degrees
-#define ANGLE_AZIMUTH_OFFSET 315 // in degrees (-45)
 
 #define GRID_MAP_WIDTH  20.0
 #define GRID_MAP_HEIGHT 10.0

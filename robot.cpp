@@ -98,7 +98,7 @@ qreal Robot::measurementProbability(const SensorData& data) const
         probability *= gauss;
     }
 
-    qreal gauss = gRandom.gaussian(m_angle, NOISE_SENSE_ANGLE, azimuthToAngle(data.m_azimuth));
+    qreal gauss = gRandom.gaussian(m_angle, NOISE_SENSE_ANGLE, data.m_angle);
     probability *= gauss;
 
     return probability;

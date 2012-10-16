@@ -1,6 +1,7 @@
 #include "sensormanager.h"
 #include "artoolkitimageprocessor.h"
 #include "fcamimageprovider.h"
+#include "helpers.h"
 #include <qmath.h>
 #include <QDebug>
 #include <QTimer>
@@ -12,11 +13,9 @@ SensorManager::SensorManager(QObject *parent) :
     m_imageProvider(0),
     m_imageCaptureAttempt(0),
     m_imageProcessor(0),
-    m_compass(0),
-    m_compassReading(0),
     m_magnetometer(0),
     m_magnetometerReading(0),
-    m_isCompassReady(false),
+    m_isMagnetometerReady(false),
     m_isCameraReady(false),
     m_isReady(false)
 {
@@ -27,13 +26,6 @@ bool SensorManager::init()
     FCamImageProvider *imageProvider = new FCamImageProvider(this);
     if (!imageProvider->init()) {
         qWarning() << "Failed to initialize camera";
-        return false;
-    }
-
-    m_compass = new QCompass(this);
-    // m_compass->setDataRate(10); // TODO: Does this help with sleep mode?
-    if (!m_compass->start()) {
-        qWarning() << "Failed to start compass sensor.";
         return false;
     }
 
@@ -50,7 +42,6 @@ bool SensorManager::init()
     QObject::connect(m_imageProvider, SIGNAL(nextImage(QImage)), m_imageProcessor, SLOT(processImage(QImage)));
     QObject::connect(m_imageProcessor, SIGNAL(imageProcessed(QList<Marker>)), this, SLOT(onMarkersChanged(QList<Marker>)));
 
-    QObject::connect(m_compass, SIGNAL(readingChanged()), this, SLOT(onCompassReadingChanged()));
     QObject::connect(m_magnetometer, SIGNAL(readingChanged()), this, SLOT(onMagnetometerReadingChanged()));
     return true;
 }
@@ -63,38 +54,26 @@ void SensorManager::onMarkersChanged(const QList<Marker> &markers)
         m_imageProvider->requestNextImage();
     } else {
         Q_ASSERT(m_compassReading->calibrationLevel() >= 1.0);
-        m_data.m_azimuth = m_compassReading->azimuth();
+        m_data.m_angle = magnetometerToAngle(m_magnetometerReading->x(), m_magnetometerReading->y());
         emit dataChanged(m_data);
-    }
-}
-
-void SensorManager::onCompassReadingChanged()
-{
-    if (!m_isCompassReady) {
-        m_compassReading = m_compass->reading();
-        qreal calibrationLevel = m_compassReading->calibrationLevel();
-        if (calibrationLevel < 1.0) {
-            qDebug() << "Compass calibration level is too low:" << calibrationLevel;
-        } else if (!m_isCompassReady) {
-            m_isCompassReady = true;
-            qDebug() << "Compass is ready";
-            signalIfReady();
-        }
     }
 }
 
 void SensorManager::onMagnetometerReadingChanged()
 {
-    m_magnetometerReading = m_magnetometer->reading();
-    if (m_magnetometerReading) {
-        qreal angle = qAtan2(m_magnetometerReading->y(), m_magnetometerReading->x());
-        if (angle < 0)
-            angle += 2 * M_PI;
-        angle = angle * 180.0 / M_PI;
-        qDebug() << "Magnetometer. Calibration:" << m_magnetometerReading->calibrationLevel() << "x:" << m_magnetometerReading->x() << "y:" << m_magnetometerReading->y() << "z:" << m_magnetometerReading->z() << "angle:" << angle;
-    }
-    if (m_compassReading) {
-        qDebug() << "Azimuth: " << m_compassReading->azimuth() << m_compassReading->calibrationLevel();
+    if (!m_isMagnetometerReady) {
+        m_magnetometerReading = m_magnetometer->reading();
+        qreal calibrationLevel = m_magnetometerReading->calibrationLevel();
+
+        if (calibrationLevel < 1.0) {
+            qDebug() << "Magnetometer calibration level is too low:" << calibrationLevel;
+        } else {
+            m_isMagnetometerReady = true;
+            qDebug() << "Magnetometer is ready";
+            signalIfReady();
+        }
+    } else {
+        qDebug() << "Magnetometer reading: " << magnetometerToAngle(m_magnetometerReading->x(), m_magnetometerReading->y()) * 180.0 / M_PI;
     }
 }
 
@@ -103,7 +82,7 @@ void SensorManager::signalIfReady()
     if (m_isReady)
         return;
 
-    if (m_isCompassReady && m_isCameraReady) {
+    if (m_isMagnetometerReady && m_isCameraReady) {
         qDebug() << "SensorManager is ready.";
         m_isReady = true;
         emit ready();

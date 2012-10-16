@@ -35,7 +35,6 @@ public slots:
     void onMarkersChanged(const QList<Marker>& markers);
 
 private slots:
-    void onCompassReadingChanged();
     void onMagnetometerReadingChanged();
 
 private:
@@ -46,13 +45,10 @@ private:
     ImageProcessor *m_imageProcessor;
     SensorData m_data;
 
-    QCompass *m_compass;
-    QCompassReading* m_compassReading;
-
     QMagnetometer *m_magnetometer;
     QMagnetometerReading *m_magnetometerReading;
 
-    bool m_isCompassReady;
+    bool m_isMagnetometerReady;
     bool m_isCameraReady;
 
     bool m_isReady;

@@ -12,7 +12,7 @@ public:
     SensorData(const SensorData& data);
     
     QList<Marker> m_markers;
-    qreal m_azimuth;
+    qreal m_angle;
 
     SensorData& operator =(const SensorData& data);
 };

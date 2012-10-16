@@ -2,7 +2,7 @@
 
 SensorData::SensorData(QObject *parent) :
     QObject(parent),
-    m_azimuth(0.0)
+    m_angle(0.0)
 {
 }
 
@@ -15,6 +15,6 @@ SensorData::SensorData(const SensorData &data) :
 SensorData &SensorData::operator =(const SensorData &data)
 {
     m_markers = data.m_markers;
-    m_azimuth = data.m_azimuth;
+    m_angle = data.m_angle;
     return *this;
 }
