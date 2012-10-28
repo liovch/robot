@@ -42,7 +42,7 @@ void ParticleFilter::turn(qreal angle)
 
 void ParticleFilter::resample(const SensorData &data)
 {
-    qDebug() << "resample";
+    qDebug() << "resample:" << data.m_angle;
     size_t N = m_particles.size();
     QVector<qreal> weights(N);
 
